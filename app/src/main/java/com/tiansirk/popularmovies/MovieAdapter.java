@@ -8,10 +8,14 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
+
+    private ArrayList<Movie> mMovieData;
 
     public MovieAdapter(){
 
@@ -33,23 +37,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
 
-        //Dummy data for testing
-        String imgPath = "http://i.imgur.com/DvpvklR.png";
-        String overview = "This film would be great if it did exist.";
-        String releaseDate = "2020-04-07";
-        String originalTitle = "The Dummy Movie";
-        double voteAvg = 9.87;
-        Movie dummyMovie = new Movie(imgPath, overview, releaseDate, originalTitle, voteAvg);
+        Movie movieForThisItem = mMovieData.get(position);
 
         Picasso.get()
-                .load(dummyMovie.getPosterImgUrl())
+                .load(movieForThisItem.getPosterImgUrl())
                 .into(holder.mPosterImageView);
 
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        if(mMovieData.isEmpty()) return 0;
+        return mMovieData.size();
     }
 
 
@@ -62,5 +61,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             mPosterImageView = itemView.findViewById(R.id.iv_grid_item_poster_view);
 
         }
+    }
+
+    /**
+     * This method is to set the data of the Movieon a ForecastAdapter if we've already
+     *      * created one. This is handy when we get new data from the web but don't want to create a
+     *      * new ForecastAdapter to display it.
+     * @param movies
+     */
+    public void setMovieData(ArrayList movies) {
+        this.mMovieData = movies;
+        notifyDataSetChanged();
     }
 }
