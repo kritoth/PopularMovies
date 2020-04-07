@@ -11,6 +11,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tiansirk.popularmovies.data.MoviesUtils;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MovieAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
+        loadMovieData();
+
+    }
+
+    /**
+     * Starts loading the data of the movies
+     */
+    private void loadMovieData(){
+        ArrayList<Movie> movies = MoviesUtils.getDummyMoviesList();
+        mAdapter.setMovieData(movies);
         showDataView();
     }
 
