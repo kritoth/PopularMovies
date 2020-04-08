@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.tiansirk.popularmovies.data.MoviesUtils;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,15 +78,20 @@ public class MainActivity extends AppCompatActivity {
             String receivedQueryParam = strings[0];
 
             URL url = MoviesUtils.buildUrl(receivedQueryParam, MainActivity.this);
-            //URL url = MoviesUtils.buildUrl("top_rated", this);
+
             try {
                 String jsonResponse = MoviesUtils.getResponseFromWeb(url);
                 Log.v(TAG, "jsonResponse: " + jsonResponse);
-            } catch (IOException e) {
-                Log.e(TAG, "Problem with reading from Internet connection: ", e);
-            }
 
-            return null;
+                ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
+                Log.v(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
+                        "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
+
+                return moviesFetchedFromJson;
+            } catch (IOException | JSONException e) {
+                Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
+                return null;
+            }
         }
 
         @Override

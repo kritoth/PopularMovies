@@ -8,6 +8,10 @@ import com.tiansirk.popularmovies.BuildConfig;
 import com.tiansirk.popularmovies.Movie;
 import com.tiansirk.popularmovies.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -59,6 +63,13 @@ public final class MoviesUtils {
 
     }
 
+    /**
+     * This method creates an {@link HttpURLConnection} to parse the data from it. It uses {@link InputStream}
+     * and {@link Scanner} to read the content from the {@param path} and return it as a String
+     * @param path A {@URL} object to create the internet connection
+     * @return A String containing the content of the location the {@param path} points to
+     * @throws IOException
+     */
     public static String getResponseFromWeb(URL path) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) path.openConnection();
         try {
@@ -78,19 +89,35 @@ public final class MoviesUtils {
         }
     }
 
-    public static String getJsonFromWebResponse (String responseFromWeb){
-        return null;
-    }
-
-    public static ArrayList<Movie> getMoviesListFromJson(String moviesJson){
+    /**
+     * This method fetches the JSON responded from the API encapsulated in a String and returns the
+     * fetched data as a list of {@link Movie} objects
+     * @param moviesJson The JSON repsonse encapsulated in a String
+     * @return an ArrayList of {@link Movie} objects
+     * @throws JSONException
+     */
+    public static ArrayList<Movie> getMoviesListFromJson(String moviesJson) throws JSONException {
 
         ArrayList<Movie> movies = new ArrayList<>();
+
+        JSONObject response = new JSONObject(moviesJson);
+        JSONArray results = response.getJSONArray("results");
+        for(int i=0; i<results.length(); i++){
+            JSONObject object = results.getJSONObject(i);
+            String posterpath = object.getString("poster_path");
+            String overview = object.getString("overview");
+            String releaseDate = object.getString("release_date");
+            String originalTitle = object.getString("original_title");
+            double voteAverage = object.getDouble("vote_average");
+            movies.add(new Movie(posterpath, overview, releaseDate, originalTitle, voteAverage));
+        }
 
         return movies;
     }
 
     /**
-     * This method generates fake movies to fill in the list of movies
+     * This method generates fake movies to fill in the list of movies for testing purposes
+     * @return dummy data
      */
     public static ArrayList<Movie> getDummyMoviesList(){
         ArrayList<Movie> fakeMovies = new ArrayList<>();
@@ -106,6 +133,10 @@ public final class MoviesUtils {
         return fakeMovies;
     }
 
+    /**
+     * Helper method for generating dummy data
+     * @return a random double
+     */
     private static double randomModifier() {
         Random r = new Random();
         return r.nextInt(10) + r.nextDouble();
