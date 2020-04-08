@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +40,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         Movie movieForThisItem = mMovieData.get(position);
 
+        holder.mTitleTextView.setText(movieForThisItem.getTitle());
+
         Picasso.get()
                 .load(movieForThisItem.getPosterImgUrl())
                 .into(holder.mPosterImageView);
@@ -54,12 +57,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     public class MovieViewHolder extends RecyclerView.ViewHolder{
         ImageView mPosterImageView;
+        TextView mTitleTextView;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mPosterImageView = itemView.findViewById(R.id.iv_grid_item_poster_view);
-
+            mTitleTextView = itemView.findViewById(R.id.tv_title);
         }
     }
 
