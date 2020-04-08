@@ -8,10 +8,14 @@ import com.tiansirk.popularmovies.BuildConfig;
 import com.tiansirk.popularmovies.Movie;
 import com.tiansirk.popularmovies.R;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * This class is for providing movies data
@@ -32,7 +36,7 @@ public final class MoviesUtils {
 
     /**
      * Build the URL for requesting form themoviedb.org API
-     * It builds as follows: Base + sortCriteria + "?api_key=..."
+     * It builds as follows: Base + sortCriteria + "?api_key=..." You can insert your API key into the api_keys.xml resource file
      * @param sortCriteria: depending on the user's setting can be: "top_rated" OR "popular"
      * @return the built URL
      */
@@ -55,8 +59,23 @@ public final class MoviesUtils {
 
     }
 
-    public static String getResponseFromWeb(URL path){
-        return null;
+    public static String getResponseFromWeb(URL path) throws IOException {
+        HttpURLConnection urlConnection = (HttpURLConnection) path.openConnection();
+        try {
+            InputStream in = urlConnection.getInputStream();
+
+            Scanner scanner = new Scanner(in);
+            scanner.useDelimiter("\\A");
+
+            boolean hasInput = scanner.hasNext();
+            if (hasInput) {
+                return scanner.next();
+            } else {
+                return null;
+            }
+        } finally {
+            urlConnection.disconnect();
+        }
     }
 
     public static String getJsonFromWebResponse (String responseFromWeb){
