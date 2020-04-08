@@ -55,9 +55,8 @@ public class MainActivity extends AppCompatActivity {
      * Starts loading the data of the movies
      */
     private void loadMovieData(){
-        ArrayList<Movie> movies = MoviesUtils.getDummyMoviesList();
-        mAdapter.setMovieData(movies);
-        showDataView();
+        //ArrayList<Movie> movies = MoviesUtils.getDummyMoviesList();
+        //mAdapter.setMovieData(movies);
 
         String usersPreference = "popular"; // or: top_rated
 
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
+            mLoadingIndicator.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -96,7 +96,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
-            super.onPostExecute(movies);
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+            if(!movies.isEmpty()) {
+
+                showDataView();
+                mAdapter.setMovieData(movies);
+            }
+            else showErrorMessage();
         }
     }
     /**
@@ -105,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
     private void showDataView() {
         /* First, make sure the error is invisible */
         mErrorMessage.setVisibility(View.INVISIBLE);
+        /* Then hide loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Then, make sure the weather data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
