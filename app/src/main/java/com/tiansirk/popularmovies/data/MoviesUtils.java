@@ -29,8 +29,8 @@ public final class MoviesUtils {
      * This method generates fake movies to fill in the list of movies
      */
     public static ArrayList<Movie> getDummyMoviesList(){
-        ArrayList<Movie> fakeMovies = new ArrayList<>(NUMBER_OF_MOVIES);
-        for(int i=0;i<fakeMovies.size(); i++){
+        ArrayList<Movie> fakeMovies = new ArrayList<>();
+        for(int i=0; i<NUMBER_OF_MOVIES; i++){
             fakeMovies.add(new Movie(
                     posterImgUrl,
                     plotSynopsis + i + " foxes chasing around.",
