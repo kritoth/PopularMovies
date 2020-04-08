@@ -4,17 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.tiansirk.popularmovies.data.MoviesUtils;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
@@ -41,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         loadMovieData();
-
     }
 
     /**
@@ -51,8 +56,42 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Movie> movies = MoviesUtils.getDummyMoviesList();
         mAdapter.setMovieData(movies);
         showDataView();
+
+        String usersPreference = "popular"; // or: top_rated
+
+        FetchMovieTask task = new FetchMovieTask();
+        task.execute(usersPreference);
     }
 
+    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<Movie> doInBackground(String... strings) {
+
+            String receivedQueryParam = strings[0];
+
+            URL url = MoviesUtils.buildUrl(receivedQueryParam, MainActivity.this);
+            //URL url = MoviesUtils.buildUrl("top_rated", this);
+            try {
+                String jsonResponse = MoviesUtils.getResponseFromWeb(url);
+                Log.v(TAG, "jsonResponse: " + jsonResponse);
+            } catch (IOException e) {
+                Log.e(TAG, "Problem with reading from Internet connection: ", e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Movie> movies) {
+            super.onPostExecute(movies);
+        }
+    }
     /**
      * This method will make the RecyclerView visible and hide the error message
      */
