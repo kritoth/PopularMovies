@@ -6,14 +6,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.tiansirk.popularmovies.data.MoviesUtils;
 
 import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
         mErrorMessage = findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
+
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
         mRecyclerView.setHasFixedSize(true);
