@@ -38,6 +38,8 @@ public final class MoviesUtils {
     private static final String TMDB_BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String QUERY_PARAM_KEY = "api_key";
 
+    private static final String IMG_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+
     /**
      * Build the URL for requesting form themoviedb.org API
      * It builds as follows: Base + sortCriteria + "?api_key=..." You can insert your API key into the api_keys.xml resource file
@@ -49,18 +51,15 @@ public final class MoviesUtils {
         Uri builtUri = Uri.parse(TMDB_BASE_URL + sortCriteria).buildUpon()
                 .appendQueryParameter(QUERY_PARAM_KEY, context.getString(R.string.THE_MOVIE_DB_API_TOKEN))
                 .build();
-
         URL url = null;
         try {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
         Log.v(TAG, "Built URI: " + url);
 
         return url;
-
     }
 
     /**
@@ -111,8 +110,17 @@ public final class MoviesUtils {
             double voteAverage = object.getDouble("vote_average");
             movies.add(new Movie(posterpath, overview, releaseDate, originalTitle, voteAverage));
         }
-
         return movies;
+    }
+
+    /**
+     * This method builds the complete url needed to fetch the image using Picasso.
+     * http://image.tmdb.org/t/p/w185/{@param relativePath}
+     * @param relativePath Returned from the JSON parsing
+     * @return The complete url encapsulated in String
+     */
+    public static String imageUrlBuilder(String relativePath){
+        return IMG_BASE_URL + relativePath;
     }
 
     /**
