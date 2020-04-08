@@ -19,7 +19,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private ArrayList<Movie> mMovieData;
 
     public MovieAdapter(){
-
+        mMovieData = new ArrayList<>();
     }
 
     @NonNull
@@ -41,7 +41,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         Movie movieForThisItem = mMovieData.get(position);
 
         holder.mTitleTextView.setText(movieForThisItem.getTitle());
-
+        //TODO: Build the full poster URL using the API documentation and getPosterImgUrl
+        // then fetch it with Picasso and set it to the mPosterImageView
         Picasso.get()
                 .load(movieForThisItem.getPosterImgUrl())
                 .into(holder.mPosterImageView);
@@ -74,7 +75,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
      * @param movies
      */
     public void setMovieData(ArrayList movies) {
-        this.mMovieData = movies;
+        mMovieData.addAll(movies);
         notifyDataSetChanged();
     }
 }
