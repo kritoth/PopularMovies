@@ -81,8 +81,7 @@ public class Movie implements Parcelable {
     }
 
     private boolean hasImage(){
-        if(posterImgUrl.isEmpty()) return false;
-        return true;
+        return !posterImgUrl.isEmpty();
     }
 
     @NonNull
