@@ -1,5 +1,6 @@
 package com.tiansirk.popularmovies;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +28,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private String mUsersPreference;
 
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
@@ -53,16 +58,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         loadMovieData();
     }
 
-
     /**
-     * Starts loading the data of the movies
+     * Starts loading the data of the movies, depending on the user's preference selected in Settings menu
+     * Default preference is "popular"
      */
     private void loadMovieData(){
-        //ArrayList<Movie> movies = MoviesUtils.getDummyMoviesList();
-        //mAdapter.setMovieData(movies);
-
-        String usersPreference = "popular"; // or: top_rated
-
+        String usersPreference = "";
+        if(mUsersPreference == null || mUsersPreference.isEmpty()) {
+            usersPreference = "popular"; // or can be: top_rated
+        }
+        else{
+            usersPreference = mUsersPreference;
+        }
         FetchMovieTask task = new FetchMovieTask();
         task.execute(usersPreference);
     }
@@ -135,5 +142,35 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settings, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int selectedItem = item.getItemId();
+
+        switch(selectedItem){
+
+            case R.id.popular:
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                mUsersPreference = "popular";
+                loadMovieData();
+                return true;
+
+            case R.id.top_rated:
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                mUsersPreference = "top_rated";
+                loadMovieData();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

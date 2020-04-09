@@ -6,4 +6,6 @@
     <string name="hint_tv_release">Release date should be here</string>
     <string name="hint_tv_rating">Rating should be here</string>
     <string name="hint_tv_overview">Overview should be here</string>
+    <string name="menu_item_popular">Popular Movies</string>
+    <string name="menu_item_top_rated">Top Rated Movies</string>
 </resources>
