@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tiansirk.popularmovies.data.MoviesUtils;
@@ -22,7 +21,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     private ArrayList<Movie> mMovieData;
 
-    public MovieAdapter(){
+    /**
+     * The interface that receives onClick messages.
+     */
+    public interface MovieAdapterOnClickHandler {
+        void onClick(Movie clickedMovie);
+    }
+
+    private final MovieAdapterOnClickHandler mClickHandler;
+
+    /**
+     * Constructor
+     * @param onClickHandler registers the click handler
+     */
+    public MovieAdapter(MovieAdapterOnClickHandler onClickHandler){
+        mClickHandler = onClickHandler;
         mMovieData = new ArrayList<>();
     }
 
@@ -56,13 +69,23 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return mMovieData.size();
     }
 
-
-    public class MovieViewHolder extends RecyclerView.ViewHolder{
-        ImageView mPosterImageView;
+    /**
+     * Custom ViewHolder for recycling the itemviews
+     */
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final ImageView mPosterImageView;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             mPosterImageView = itemView.findViewById(R.id.iv_grid_item_poster_view);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            Movie movie = mMovieData.get(clickedPosition);
+            mClickHandler.onClick(movie);
         }
     }
 

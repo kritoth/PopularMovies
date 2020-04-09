@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -20,7 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -45,11 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new MovieAdapter();
+        mAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
         loadMovieData();
     }
+
 
     /**
      * Starts loading the data of the movies
@@ -62,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
 
         FetchMovieTask task = new FetchMovieTask();
         task.execute(usersPreference);
+    }
+
+    @Override
+    public void onClick(Movie clickedMovie) {
+        Intent activityIntent = new Intent(this, DetailActivity.class);
+        activityIntent.putExtra("CHOSEN_MOVIE", clickedMovie);
+        startActivity(activityIntent);
     }
 
     public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>>{
