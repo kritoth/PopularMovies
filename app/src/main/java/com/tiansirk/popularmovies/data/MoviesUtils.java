@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.tiansirk.popularmovies.BuildConfig;
 import com.tiansirk.popularmovies.Movie;
 import com.tiansirk.popularmovies.R;
 

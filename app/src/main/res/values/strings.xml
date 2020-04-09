@@ -2,4 +2,8 @@
     <string name="app_name">PopularMovies</string>
     <string name="error_message">An error occurred. Try again later.</string>
     <string name="content_description_poster">Poster of the movie</string>
+    <string name="hint_tv_title">Title should be here</string>
+    <string name="hint_tv_release">Release date should be here</string>
+    <string name="hint_tv_rating">Rating should be here</string>
+    <string name="hint_tv_overview">Overview should be here</string>
 </resources>
