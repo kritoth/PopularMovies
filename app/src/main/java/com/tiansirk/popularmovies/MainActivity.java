@@ -28,13 +28,13 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
+    private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: top_rated
 
     private String mUsersPreference;
-
     private RecyclerView mRecyclerView;
     private TextView mErrorMessage;
     private ProgressBar mLoadingIndicator;
-
     private MovieAdapter mAdapter;
 
     @Override
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void loadMovieData(){
         String usersPreference = "";
         if(mUsersPreference == null || mUsersPreference.isEmpty()) {
-            usersPreference = "popular"; // or can be: top_rated
+            usersPreference = DEFAULT_USER_PREFERENCE;
         }
         else{
             usersPreference = mUsersPreference;
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onClick(Movie clickedMovie) {
         Intent activityIntent = new Intent(this, DetailActivity.class);
-        activityIntent.putExtra("CHOSEN_MOVIE", clickedMovie);
+        activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
         startActivity(activityIntent);
     }
 

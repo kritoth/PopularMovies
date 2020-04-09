@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.tiansirk.popularmovies.data.MoviesUtils;
 
 import java.util.ArrayList;
 
@@ -60,7 +59,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 .load(imgPath)
                 .into(holder.mPosterImageView);
 
-        Log.v(TAG, "Poster img in Movie: " + imgPath);
+        //Log.v(TAG, "Poster img in Movie: " + imgPath);
     }
 
     @Override
