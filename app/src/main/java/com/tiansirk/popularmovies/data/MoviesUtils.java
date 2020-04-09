@@ -107,7 +107,9 @@ public final class MoviesUtils {
             String releaseDate = object.getString("release_date");
             String originalTitle = object.getString("original_title");
             double voteAverage = object.getDouble("vote_average");
-            movies.add(new Movie(posterpath, overview, releaseDate, originalTitle, voteAverage));
+
+            String completePosterPath = imageUrlBuilder(posterpath);
+            movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage));
         }
         return movies;
     }
@@ -118,7 +120,7 @@ public final class MoviesUtils {
      * @param relativePath Returned from the JSON parsing
      * @return The complete url encapsulated in String
      */
-    public static String imageUrlBuilder(String relativePath){
+    private static String imageUrlBuilder(String relativePath){
         return IMG_BASE_URL + relativePath;
     }
 
