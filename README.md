@@ -24,3 +24,5 @@ To present particular mobile experiences brought to life. Specifically, to prese
 Fetch data from the Internet with theMovieDB API.
 Use adapters and custom list layouts to populate list views.
 Incorporate libraries to simplify the amount of code you needed.
+
+# API Key must be inserted into the api_keys.xml in values folder to have the app working
