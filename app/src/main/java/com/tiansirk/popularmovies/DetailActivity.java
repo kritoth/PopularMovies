@@ -1,7 +1,9 @@
 package com.tiansirk.popularmovies;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Layout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -37,6 +39,9 @@ public class DetailActivity extends AppCompatActivity {
                 mReleaseDateView.setText(mMovie.getReleaseDate());
                 mRatingView.setText(Double.toString(mMovie.getUserRating()));
                 mPlotView.setText(mMovie.getPlotSynopsis());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mPlotView.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+                }
             }
         }
     }
