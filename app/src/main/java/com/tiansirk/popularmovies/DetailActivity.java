@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +16,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
 
+    private ImageView mPoster;
     private TextView mTitleView;
     private TextView mReleaseDateView;
     private TextView mRatingView;
@@ -25,6 +29,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        mPoster = findViewById(R.id.iv_poster_view);
         mTitleView = findViewById(R.id.tv_title);
         mReleaseDateView = findViewById(R.id.tv_release_date);
         mRatingView = findViewById(R.id.tv_rating);
@@ -35,6 +40,9 @@ public class DetailActivity extends AppCompatActivity {
             if (receivedIntent.hasExtra(KEY_ACTIVITY_INTENT)) {
                 mMovie = receivedIntent.getParcelableExtra(KEY_ACTIVITY_INTENT);
 
+                Picasso.get()
+                        .load(mMovie.getPosterImgUrl())
+                        .into(mPoster);
                 mTitleView.setText(mMovie.getTitle());
                 mReleaseDateView.setText(mMovie.getReleaseDate());
                 mRatingView.setText(Double.toString(mMovie.getUserRating()));
