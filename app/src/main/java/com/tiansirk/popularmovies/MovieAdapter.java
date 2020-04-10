@@ -31,9 +31,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     /**
      * Constructor
+     *
      * @param onClickHandler registers the click handler
      */
-    public MovieAdapter(MovieAdapterOnClickHandler onClickHandler){
+    public MovieAdapter(MovieAdapterOnClickHandler onClickHandler) {
         mClickHandler = onClickHandler;
         mMovieData = new ArrayList<>();
     }
@@ -55,6 +56,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         Movie movieForThisItem = mMovieData.get(position);
         String imgPath = movieForThisItem.getPosterImgUrl();
+
         Picasso.get()
                 .load(imgPath)
                 .into(holder.mPosterImageView);
@@ -64,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public int getItemCount() {
-        if(mMovieData.isEmpty()) return 0;
+        if (mMovieData.isEmpty()) return 0;
         return mMovieData.size();
     }
 
@@ -92,6 +94,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
      * This method is to set the data of the Movies on a MovieAdapter if we've already
      * created one. This is handy when we get new data from the web but don't want to create a
      * new MovieAdapter to display it.
+     *
      * @param movies The list of Movies to set to the Adapter
      */
     public void setMovieData(ArrayList movies) {

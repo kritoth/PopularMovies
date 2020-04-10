@@ -62,12 +62,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      * Starts loading the data of the movies, depending on the user's preference selected in Settings menu
      * Default preference is "popular"
      */
-    private void loadMovieData(){
+    private void loadMovieData() {
         String usersPreference = "";
-        if(mUsersPreference == null || mUsersPreference.isEmpty()) {
+        if (mUsersPreference == null || mUsersPreference.isEmpty()) {
             usersPreference = DEFAULT_USER_PREFERENCE;
-        }
-        else{
+        } else {
             usersPreference = mUsersPreference;
         }
         FetchMovieTask task = new FetchMovieTask();
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(activityIntent);
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>>{
+    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         @Override
         protected void onPreExecute() {
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             try {
                 String jsonResponse = MoviesUtils.getResponseFromWeb(url);
-                Log.v(TAG, "jsonResponse: " + jsonResponse);
+                //Log.v(TAG, "jsonResponse: " + jsonResponse);
 
                 ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
                 Log.v(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
@@ -114,14 +113,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
             mLoadingIndicator.setVisibility(View.VISIBLE);
-            if(!movies.isEmpty()) {
+            if (!movies.isEmpty()) {
 
                 showDataView();
                 mAdapter.setMovieData(movies);
-            }
-            else showErrorMessage();
+            } else showErrorMessage();
         }
     }
+
     /**
      * This method will make the RecyclerView visible and hide the error message
      */
@@ -130,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mErrorMessage.setVisibility(View.INVISIBLE);
         /* Then hide loading indicator */
         mLoadingIndicator.setVisibility(View.INVISIBLE);
-        /* Then, make sure the weather data is visible */
+        /* Then, make sure the movie is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -155,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int selectedItem = item.getItemId();
 
-        switch(selectedItem){
+        switch (selectedItem) {
 
             case R.id.popular:
                 mAdapter = new MovieAdapter(this);
