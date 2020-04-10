@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(Movie clickedMovie) {
+        Log.d(TAG, "Movie item clicked");
+
         Intent activityIntent = new Intent(this, DetailActivity.class);
         activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
         startActivity(activityIntent);
@@ -157,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         switch (selectedItem) {
 
             case R.id.popular:
+                Log.d(TAG, "Popular menu item selected");
                 mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "popular";
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return true;
 
             case R.id.top_rated:
+                Log.d(TAG, "Top rated menu item selected");
                 mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "top_rated";

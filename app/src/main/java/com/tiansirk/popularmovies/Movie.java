@@ -89,7 +89,7 @@ public class Movie implements Parcelable {
     public String toString() {
         return "\n Title: " + getTitle() +
                 "\n Has a poster: " + hasImage() +
-                "\n Plot synopsis: " + getPlotSynopsis().substring(0,100) + "..." +
+                "\n Plot synopsis: " + getPlotSynopsis().substring(0,50) + "..." +
                 "\n Release date: " + getReleaseDate() +
                 "\n User rating: " + getUserRating();
     }
