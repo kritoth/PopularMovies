@@ -29,11 +29,13 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Movie> {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<ArrayList<Movie>> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
     private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: top_rated
+    private static final String KEY_BUNDLE_FOR_LOADER = "USERS_PREFERENCE";
     private static final int ID_LOADER = 33;
 
     private String mUsersPreference;
@@ -74,8 +76,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             usersPreference = mUsersPreference;
         }
-        FetchMovieTask task = new FetchMovieTask();
-        task.execute(usersPreference);
+        //FetchMovieTask task = new FetchMovieTask();
+        //task.execute(usersPreference);
+        Bundle bundle = new Bundle();
+        bundle.putString(KEY_BUNDLE_FOR_LOADER, usersPreference);
+
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
+        Loader<ArrayList<Movie>> loader = loaderManager.getLoader(ID_LOADER);
+        if (loader == null) {
+            loaderManager.initLoader(ID_LOADER, bundle, this);
+            Log.v(TAG, "\nLoader initiated!!!!!\n");
+        } else {
+            loaderManager.restartLoader(ID_LOADER, bundle, this);
+            Log.v(TAG, "\nLoader restarted!!!!!\n");
+        }
     }
 
     @Override
@@ -85,79 +99,109 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(activityIntent);
     }
 
+    /**
+     * Loader for loading Movies from network API in the background
+     * @param id The Loader's ID
+     * @param args A Bundle which will be used for performing the network request and loading the response
+     * @return ArrayList of Movie objects
+     */
     @NonNull
     @Override
-    public Loader<Movie> onCreateLoader(int id, @Nullable Bundle args) {
-        return new AsyncTaskLoader<Movie>(this) {
+    public Loader<ArrayList<Movie>> onCreateLoader(int id, @Nullable final Bundle args) {
+        return new AsyncTaskLoader<ArrayList<Movie>>(this) {
+            /**
+             * If the user navigates out from the Activity then returns, but didn't make any new request,
+             * then the previous result should be shown instead of loading a new request. For that
+             * the already loaded list is cached and delivered as result instead of initiating a loadInBackground.
+             */
+            ArrayList<Movie> mDisplayedMovieList;
 
+            /**
+             * At the start of loading first check if there is anything to be loaded, ie. Bundle is not null.
+             * If load is needed, then show the loading indicator.
+             * Check if there is a cached list and if so, deliver that instead of a new load
+             */
             @Override
             protected void onStartLoading() {
-                super.onStartLoading();
+                if(args == null) return;
+
+                if(mDisplayedMovieList != null) {
+                    deliverResult(mDisplayedMovieList);
+                }
+                else {
+                    mLoadingIndicator.setVisibility(View.VISIBLE);
+                    forceLoad();
+                }
             }
 
+            /**
+             * Performs the load in the background thread. The load consist of (1) building a URL,
+             * (2) performing network request with it, (3) parsing JSON received from network,
+             * (4) fetching the JSON to Movie objects and (5) storing those into an ArrayList
+             * @return The ArrayList of Movie objects
+             */
             @Nullable
             @Override
-            public Movie loadInBackground() {
-                return null;
+            public ArrayList<Movie> loadInBackground() {
+                /* If the starting Bundle is null, nothing is to be loaded, sor return early */
+                if (args == null) {
+                    return null;
+                }
+                /* Get the user's preference passed as @param, by using the KEY for it */
+                String receivedQueryParam = args.getString(KEY_BUNDLE_FOR_LOADER);
+                /* Build the URL needed for web request */
+                URL url = MoviesUtils.buildUrl(receivedQueryParam, MainActivity.this);
+                /* Try the network request and the JSON parsing with the help of the utility class */
+                try {
+                    String jsonResponse = MoviesUtils.getResponseFromWeb(url);
+                    //Log.v(TAG, "jsonResponse: " + jsonResponse);
+
+                    ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
+                    Log.v(TAG, "\nNumber of fetched movies: " + moviesFetchedFromJson.size() +
+                            "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
+                    return moviesFetchedFromJson;
+
+                } catch (IOException | JSONException e) {
+                    Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
+                    return null;
+                }
             }
 
+            /**
+             * If the load is done cache it to have it redelivered when no new load is needed
+             * @param data The loaded ArrayList of Movie objects
+             */
             @Override
-            public void deliverResult(@Nullable Movie data) {
+            public void deliverResult(@Nullable ArrayList<Movie> data) {
+                mDisplayedMovieList = data;
+                Log.v(TAG, "\ndeliverResult initiated");
+
                 super.deliverResult(data);
             }
         };
     }
 
+    /**
+     * When the load is finished set the loaded data into the RecyclerView.Adapter object
+     * @param loader
+     * @param data The loaded ArrayList of Movie object
+     */
     @Override
-    public void onLoadFinished(@NonNull Loader<Movie> loader, Movie data) {
-
+    public void onLoadFinished(@NonNull Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        if (data == null || data.isEmpty()) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            showErrorMessage();
+        } else {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            showDataView();
+            mAdapter.setMovieData(data);
+        }
     }
 
     @Override
-    public void onLoaderReset(@NonNull Loader<Movie> loader) {
+    public void onLoaderReset(@NonNull Loader<ArrayList<Movie>> loader) {
 
-    }
-
-//TODO: This will be updated
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
-
-        @Override
-        protected void onPreExecute() {
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-
-        @Override
-        protected ArrayList<Movie> doInBackground(String... strings) {
-
-            String receivedQueryParam = strings[0];
-
-            URL url = MoviesUtils.buildUrl(receivedQueryParam, MainActivity.this);
-
-            try {
-                String jsonResponse = MoviesUtils.getResponseFromWeb(url);
-                //Log.v(TAG, "jsonResponse: " + jsonResponse);
-
-                ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
-                Log.v(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
-                        "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
-
-                return moviesFetchedFromJson;
-            } catch (IOException | JSONException e) {
-                Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-            if (!movies.isEmpty()) {
-
-                showDataView();
-                mAdapter.setMovieData(movies);
-            } else showErrorMessage();
-        }
     }
 
     /**
@@ -189,12 +233,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return true;
     }
 
+    //TODO: Refactor this to work with Loader ?!
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int selectedItem = item.getItemId();
 
         switch (selectedItem) {
-
             case R.id.popular:
                 mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
