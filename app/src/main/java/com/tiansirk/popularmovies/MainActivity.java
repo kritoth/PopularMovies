@@ -1,7 +1,11 @@
 package com.tiansirk.popularmovies;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,11 +29,12 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Movie> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
     private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: top_rated
+    private static final int ID_LOADER = 33;
 
     private String mUsersPreference;
     private RecyclerView mRecyclerView;
@@ -80,6 +85,40 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(activityIntent);
     }
 
+    @NonNull
+    @Override
+    public Loader<Movie> onCreateLoader(int id, @Nullable Bundle args) {
+        return new AsyncTaskLoader<Movie>(this) {
+
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+            }
+
+            @Nullable
+            @Override
+            public Movie loadInBackground() {
+                return null;
+            }
+
+            @Override
+            public void deliverResult(@Nullable Movie data) {
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Movie> loader, Movie data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Movie> loader) {
+
+    }
+
+//TODO: This will be updated
     public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         @Override
