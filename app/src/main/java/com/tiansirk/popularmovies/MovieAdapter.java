@@ -101,4 +101,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         mMovieData.addAll(movies);
         notifyDataSetChanged();
     }
+
+    public ArrayList<Movie> getMovieData(){
+        return mMovieData;
+    }
 }

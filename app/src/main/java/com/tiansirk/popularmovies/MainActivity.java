@@ -76,27 +76,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             usersPreference = mUsersPreference;
         }
-        //FetchMovieTask task = new FetchMovieTask();
-        //task.execute(usersPreference);
+
         Bundle bundle = new Bundle();
         bundle.putString(KEY_BUNDLE_FOR_LOADER, usersPreference);
-
         LoaderManager loaderManager = LoaderManager.getInstance(this);
-        Loader<ArrayList<Movie>> loader = loaderManager.getLoader(ID_LOADER);
-        if (loader == null) {
-            loaderManager.initLoader(ID_LOADER, bundle, this);
-            Log.v(TAG, "\nLoader initiated!!!!!\n");
-        } else {
-            loaderManager.restartLoader(ID_LOADER, bundle, this);
-            Log.v(TAG, "\nLoader restarted!!!!!\n");
-        }
-    }
+        loaderManager.initLoader(ID_LOADER, bundle, this);
 
-    @Override
-    public void onClick(Movie clickedMovie) {
-        Intent activityIntent = new Intent(this, DetailActivity.class);
-        activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
-        startActivity(activityIntent);
+        Log.d(TAG, "\nLoader initiated!!!!!\n");
     }
 
     /**
@@ -123,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
              */
             @Override
             protected void onStartLoading() {
+                Log.d(TAG, "\nonStartLoading initiated");
                 if(args == null) return;
 
                 if(mDisplayedMovieList != null) {
@@ -143,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             @Nullable
             @Override
             public ArrayList<Movie> loadInBackground() {
+                Log.d(TAG, "\nLoadInBackground initiated");
                 /* If the starting Bundle is null, nothing is to be loaded, sor return early */
                 if (args == null) {
                     return null;
@@ -154,10 +142,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 /* Try the network request and the JSON parsing with the help of the utility class */
                 try {
                     String jsonResponse = MoviesUtils.getResponseFromWeb(url);
-                    //Log.v(TAG, "jsonResponse: " + jsonResponse);
+                    //Log.d(TAG, "jsonResponse: " + jsonResponse);
 
                     ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
-                    Log.v(TAG, "\nNumber of fetched movies: " + moviesFetchedFromJson.size() +
+                    Log.d(TAG, "\nNumber of fetched movies: " + moviesFetchedFromJson.size() +
                             "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
                     return moviesFetchedFromJson;
 
@@ -173,9 +161,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
              */
             @Override
             public void deliverResult(@Nullable ArrayList<Movie> data) {
-                mDisplayedMovieList = data;
-                Log.v(TAG, "\ndeliverResult initiated");
+                Log.d(TAG, "\ndeliverResult initiated");
 
+                mDisplayedMovieList = data;
                 super.deliverResult(data);
             }
         };
@@ -188,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      */
     @Override
     public void onLoadFinished(@NonNull Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
+        Log.d(TAG, "\nonLoadFinished initiated");
         mLoadingIndicator.setVisibility(View.VISIBLE);
         if (data == null || data.isEmpty()) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -227,30 +216,51 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
+    public void onClick(Movie clickedMovie) {
+        Intent activityIntent = new Intent(this, DetailActivity.class);
+        activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
+        startActivity(activityIntent);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.settings, menu);
         return true;
     }
 
-    //TODO: Refactor this to work with Loader ?!
+    /**
+     * Menu for choosing request terms: "popular" or "top_rated"
+     * After choocing the Loadermanager restarted to reuse the existing loader
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int selectedItem = item.getItemId();
+        Bundle bundle = new Bundle();
 
         switch (selectedItem) {
             case R.id.popular:
                 mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "popular";
-                loadMovieData();
+
+                bundle.putString(KEY_BUNDLE_FOR_LOADER, mUsersPreference);
+                LoaderManager.getInstance(this).restartLoader(ID_LOADER, bundle, this);
+                Log.d(TAG, "\nLoader restarted!!!!!\n\"popular\" selected");
+
                 return true;
 
             case R.id.top_rated:
                 mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "top_rated";
-                loadMovieData();
+
+                bundle.putString(KEY_BUNDLE_FOR_LOADER, mUsersPreference);
+                LoaderManager.getInstance(this).restartLoader(ID_LOADER, bundle, this);
+                Log.d(TAG, "\nLoader restarted!!!!!\n\"top_rated\" selected");
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
