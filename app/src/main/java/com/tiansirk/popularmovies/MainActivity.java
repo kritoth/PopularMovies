@@ -71,6 +71,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
         FetchMovieTask task = new FetchMovieTask();
         task.execute(usersPreference);
+        /*
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        ArrayList<Movie> movies = Repository.getMovies(usersPreference);
+        if (!movies.isEmpty()) {
+            showDataView();
+            mAdapter.setMovieData(movies);
+        } else showErrorMessage();
+        */
+
     }
 
     @Override
@@ -157,10 +166,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int selectedItem = item.getItemId();
 
         switch (selectedItem) {
-
             case R.id.popular:
                 Log.d(TAG, "Popular menu item selected");
-                mAdapter = new MovieAdapter(this);
+                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "popular";
                 loadMovieData();
@@ -168,11 +176,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             case R.id.top_rated:
                 Log.d(TAG, "Top rated menu item selected");
-                mAdapter = new MovieAdapter(this);
+                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "top_rated";
                 loadMovieData();
                 return true;
+                /*
+            case R.id.favorite:
+                Log.d(TAG, "Favorite menu item selected");
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                mUsersPreference = "favorite";
+                loadMovieData();
+                return true;
+                */
         }
         return super.onOptionsItemSelected(item);
     }
