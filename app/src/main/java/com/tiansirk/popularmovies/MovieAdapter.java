@@ -61,7 +61,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 .load(imgPath)
                 .into(holder.mPosterImageView);
 
-        //Log.v(TAG, "Poster img in Movie: " + imgPath);
+        //Log.d(TAG, "Poster img in Movie: " + imgPath);
     }
 
     @Override

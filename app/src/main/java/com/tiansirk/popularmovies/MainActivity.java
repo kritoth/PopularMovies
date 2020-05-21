@@ -16,7 +16,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.tiansirk.popularmovies.data.MoviesUtils;
+import com.tiansirk.popularmovies.util.AppExecutors;
+import com.tiansirk.popularmovies.util.MoviesUtils;
 
 import org.json.JSONException;
 
@@ -69,58 +70,70 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             usersPreference = mUsersPreference;
         }
-        FetchMovieTask task = new FetchMovieTask();
-        task.execute(usersPreference);
-        /*
+        //TODO: AsyncTask changed to Executor:
+
+//        FetchMovieTask task = new FetchMovieTask();
+//        task.execute(usersPreference);
+
         mLoadingIndicator.setVisibility(View.VISIBLE);
-        ArrayList<Movie> movies = Repository.getMovies(usersPreference);
-        if (!movies.isEmpty()) {
-            showDataView();
-            mAdapter.setMovieData(movies);
-        } else showErrorMessage();
-        */
+        if (mUsersPreference == null || mUsersPreference.isEmpty()) {
+            mUsersPreference = DEFAULT_USER_PREFERENCE;
+        }
+        AppExecutors.getInstance().networkIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                URL url = MoviesUtils.buildUrl(mUsersPreference, MainActivity.this);
+                try {
+                    String jsonResponse = MoviesUtils.getResponseFromWeb(url);
+                    //Log.d(TAG, "jsonResponse: " + jsonResponse);
+                    final ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
+                    Log.d(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
+                            "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
 
-    }
+                    //TODO: Simplify this later with AAC
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!moviesFetchedFromJson.isEmpty()) {
+                                showDataView();
+                                mAdapter.setMovieData(moviesFetchedFromJson);
+                            } else {
+                                showErrorMessage();
+                            }
+                        }
+                    });
 
-    @Override
-    public void onClick(Movie clickedMovie) {
-        Log.d(TAG, "Movie item clicked");
-
-        Intent activityIntent = new Intent(this, DetailActivity.class);
-        activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
-        startActivity(activityIntent);
+                } catch (IOException | JSONException e) {
+                    Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
+                }
+                //finish();
+            }
+        });
     }
 
     public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
-
         @Override
         protected void onPreExecute() {
             mLoadingIndicator.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
-
         @Override
         protected ArrayList<Movie> doInBackground(String... strings) {
-
             String receivedQueryParam = strings[0];
-
             URL url = MoviesUtils.buildUrl(receivedQueryParam, MainActivity.this);
-
             try {
                 String jsonResponse = MoviesUtils.getResponseFromWeb(url);
-                //Log.v(TAG, "jsonResponse: " + jsonResponse);
+                //Log.d(TAG, "jsonResponse: " + jsonResponse);
 
                 ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
-                Log.v(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
+                Log.d(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
                         "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
-
                 return moviesFetchedFromJson;
             } catch (IOException | JSONException e) {
                 Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
                 return null;
             }
         }
-
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
             mLoadingIndicator.setVisibility(View.VISIBLE);
@@ -150,9 +163,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void showErrorMessage() {
         /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
+        /* Then hide loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessage.setVisibility(View.VISIBLE);
     }
+
+
+    @Override
+    public void onClick(Movie clickedMovie) {
+        Log.d(TAG, "Movie item clicked");
+
+        Intent activityIntent = new Intent(this, DetailActivity.class);
+        activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
+        startActivity(activityIntent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

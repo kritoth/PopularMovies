@@ -1,4 +1,4 @@
-package com.tiansirk.popularmovies.data;
+package com.tiansirk.popularmovies.util;
 
 import android.content.Context;
 import android.net.Uri;
@@ -56,7 +56,7 @@ public final class MoviesUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.v(TAG, "Built URI: " + url);
+        Log.d(TAG, "Built URI: " + url);
 
         return url;
     }
