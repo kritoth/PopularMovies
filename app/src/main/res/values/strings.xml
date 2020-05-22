@@ -8,4 +8,7 @@
     <string name="hint_tv_overview">Overview should be here</string>
     <string name="menu_item_popular">Popular Movies</string>
     <string name="menu_item_top_rated">Top Rated Movies</string>
+    <string name="mark_as_favorite">Save as favorite!</string>
+    <string name="marked_as_favorite">One of your favorites!</string>
+    <string name="trailers">Trailers:</string>
 </resources>
