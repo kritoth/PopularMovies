@@ -16,9 +16,10 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/content_description_poster"
         android:scaleType="centerCrop"
+        android:src="@drawable/default_image_thumbnail"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/detail_tv_title"
@@ -29,8 +30,7 @@
         android:hint="@string/hint_tv_title"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constrainStart_toEndOf="detail_iv_poster_view"
-        app:layout_constraintLeft_toRightOf="detail_iv_poster_view"
+        app:layout_constraintStart_toEndOf="@+id/detail_iv_poster_view"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
