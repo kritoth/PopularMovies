@@ -74,11 +74,11 @@ public class DetailActivity extends AppCompatActivity {
         });
 
 
-        mTrailerTitle = findViewById(R.id.detail_tv_trailer);
+        mTrailerTitle = findViewById(R.id.trailer_item_tv_title);
         // Todo: Set its text if there is a title for the trailer. Check the youtube API and set/create Movie field
 
 
-        mTrailerPlay = findViewById(R.id.detail_iv_play_button);
+        mTrailerPlay = findViewById(R.id.trailer_item_iv_play_button);
         mTrailerPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

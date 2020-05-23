@@ -30,6 +30,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constrainStart_toEndOf="detail_iv_poster_view"
+        app:layout_constraintLeft_toRightOf="detail_iv_poster_view"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
