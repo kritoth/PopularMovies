@@ -41,7 +41,7 @@ public final class MoviesUtils {
 
     /**
      * Build the URL for requesting form themoviedb.org API
-     * It builds as follows: Base + sortCriteria + "?api_key=..." You can insert your API key into the api_keys.xml resource file
+     * It builds as follows: BaseURL + sortCriteria + "?api_key={your-API-key}" You can insert your API key into the api_keys.xml resource file
      * @param sortCriteria: depending on the user's setting can be: "top_rated" OR "popular"
      * @return the built URL
      */
@@ -60,6 +60,7 @@ public final class MoviesUtils {
 
         return url;
     }
+
 
     /**
      * This method creates an {@link HttpURLConnection} to parse the data from it. It uses {@link InputStream}
@@ -107,9 +108,12 @@ public final class MoviesUtils {
             String releaseDate = object.getString("release_date");
             String originalTitle = object.getString("original_title");
             double voteAverage = object.getDouble("vote_average");
+            ArrayList<String> videos;
+            ArrayList<String> reviews;
 
             String completePosterPath = imageUrlBuilder(posterpath);
-            movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage));
+            //TODO: After testing uncomment and add real trailers and reviews
+            //movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage));
         }
         return movies;
     }
@@ -136,15 +140,38 @@ public final class MoviesUtils {
                     plotSynopsis + i + " foxes chasing around.",
                     releaseDate + i,
                     title + i,
-                    userRating + randomModifier())
+                    userRating + randomModifier(),
+                    dummyTrailers(),
+                    dummyReviews())
             );
         }
         return fakeMovies;
     }
-
+    /**
+     * Helper method for generating dummy video location data
+     * @return a ArrayList of dummy trailers
+     */
+    private static ArrayList<String> dummyTrailers(){
+        ArrayList<String> dummyTrailers = new ArrayList<>();
+        for(int i=0; i<randomModifier(); i++){
+            dummyTrailers.add("http:\\www.video-is-here\\" + i);
+        }
+        return dummyTrailers;
+    }
+    /**
+     * Helper method for generating dummy review data
+     * @return a ArrayList of dummy reviews
+     */
+    private static ArrayList<String> dummyReviews(){
+        ArrayList<String> dummyReviews = new ArrayList<>();
+        for(int i=0; i<randomModifier(); i++){
+            dummyReviews.add("Review:\nThis Movie is great!\n" + i + "/10 star!");
+        }
+        return dummyReviews;
+    }
     /**
      * Helper method for generating dummy data
-     * @return a random double
+     * @return a random double bween 0 and 10
      */
     private static double randomModifier() {
         Random r = new Random();

@@ -75,7 +75,8 @@ public class DetailActivity extends AppCompatActivity {
 
 
         mTrailerTitle = findViewById(R.id.detail_tv_trailer);
-        // Todo: Set its text if there is a title for the trailer. Check the API and set Room accordingly
+        // Todo: Set its text if there is a title for the trailer. Check the youtube API and set/create Movie field
+
 
         mTrailerPlay = findViewById(R.id.detail_iv_play_button);
         mTrailerPlay.setOnClickListener(new View.OnClickListener() {
