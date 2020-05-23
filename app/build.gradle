@@ -40,7 +40,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$rootProject.archLifecycleVersion"
     // Annotation processor
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
-
+    // SharedPreferences
+    implementation "androidx.preference:preference:$rootProject.preferenceVersion"
 }
 
 repositories {
