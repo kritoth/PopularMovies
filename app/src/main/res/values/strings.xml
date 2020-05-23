@@ -10,5 +10,10 @@
     <string name="menu_item_top_rated">Top Rated Movies</string>
     <string name="mark_as_favorite">Save as favorite!</string>
     <string name="marked_as_favorite">One of your favorites!</string>
-    <string name="trailers">Trailers:</string>
+    <string name="trailers_label">Trailers</string>
+    <string name="overview_label">Overview</string>
+    <string name="hint_trailer_title">Trailer title</string>
+    <string name="content_description_play_button">Play button</string>
+    <string name="reviews_label">Reviews</string>
+    <string name="content_description_star_favorite">A star for making favorite</string>
 </resources>
