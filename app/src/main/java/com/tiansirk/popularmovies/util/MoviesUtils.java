@@ -2,6 +2,7 @@ package com.tiansirk.popularmovies.util;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tiansirk.popularmovies.Movie;
@@ -34,18 +35,27 @@ public final class MoviesUtils {
     private static String title = "The Match ";
     private static double userRating = 0;
 
+    private Context mContext;
+
     private static final String TMDB_BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String QUERY_PARAM_KEY = "api_key";
+    private static final String APPEND_TO_RESPONSE = "append_to_response";
+    private static final String[] SUB_REQUESTS = {"videos", "reviews"};
+    private static final String DELIMITER = ",";
 
     private static final String IMG_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
+    private static final String YOUTUBE_WATCH_URL = "https://www.youtube.com/watch";
+    private static final String YOUTUBE_QUERY_PARAM_KEY = "v";
+
     /**
-     * Build the URL for requesting form themoviedb.org API
-     * It builds as follows: BaseURL + sortCriteria + "?api_key={your-API-key}" You can insert your API key into the api_keys.xml resource file
-     * @param sortCriteria: depending on the user's setting can be: "top_rated" OR "popular"
+     * Build the URL for to request a list of movies from themoviedb.org API
+     * It builds as follows: https://api.themoviedb.org/3/movie/{sortCriteria}?api_key={api_key}"
+     * You can insert your API key into the api_keys.xml resource file
+     * @param sortCriteria: depending on the user's setting can be: "top_rated", "popular", "now_playing" or "upcoming"
      * @return the built URL
      */
-    public static URL buildUrl (String sortCriteria, Context context){
+    public static URL buildListUrl(String sortCriteria, Context context){
 
         Uri builtUri = Uri.parse(TMDB_BASE_URL + sortCriteria).buildUpon()
                 .appendQueryParameter(QUERY_PARAM_KEY, context.getString(R.string.THE_MOVIE_DB_API_TOKEN))
@@ -56,17 +66,61 @@ public final class MoviesUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "Built URI: " + url);
+        Log.d(TAG, "Built Movie list URI: " + url);
 
         return url;
     }
 
+    /**
+     * Build the URL for to request some details of a single Movie from themoviedb.org API
+     * It builds as follows:  https://api.themoviedb.org/3/movie/{movieID}?api_key={api_key}&append_to_response={videos},{reviews},{etc}
+     * You can insert your API key into the api_keys.xml resource file
+     * @param movieID: The ID of the Movie of which details are to be requested
+     * @param context: Application's context to reach for the API key available in the Application's resources
+     * @return the built URL
+     */
+    public static URL buildDetailURL(int movieID, Context context){
+        Uri builtUri = Uri.parse(TMDB_BASE_URL + movieID).buildUpon()
+                .appendQueryParameter(QUERY_PARAM_KEY, context.getString(R.string.THE_MOVIE_DB_API_TOKEN))
+                .appendQueryParameter(APPEND_TO_RESPONSE, TextUtils.join(DELIMITER, SUB_REQUESTS)) //TODO: vessző helyett %2C -t csinál
+                .build();
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "Built Movie detail URI: " + builtUri);
+
+        return url;
+    }
+
+    /**
+     * Build the URL for a youtube video of a single Movie
+     * It builds as follows:  https://www.youtube.com/watch?v={videoKey}
+     * @param videoKey: The key of the video on youtube
+     * @return the built URL
+     */
+    public static URL buildVideoURL(String videoKey){
+        Uri builtUri = Uri.parse(YOUTUBE_WATCH_URL).buildUpon()
+                .appendQueryParameter(YOUTUBE_QUERY_PARAM_KEY, videoKey)
+                .build();
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "Built Youtube URI: " + url);
+
+        return url;
+    }
 
     /**
      * This method creates an {@link HttpURLConnection} to parse the data from it. It uses {@link InputStream}
      * and {@link Scanner} to read the content from the {@param path} and return it as a String
      * @param path A {@URL} object to create the internet connection
-     * @return A String containing the content of the location the {@param path} points to
+     * @return A String containing the content of the URL location the {@param path} points to
      * @throws IOException
      */
     public static String getResponseFromWeb(URL path) throws IOException {
@@ -92,10 +146,11 @@ public final class MoviesUtils {
      * This method fetches the JSON responded from the API encapsulated in a String and returns the
      * fetched data as a list of {@link Movie} objects
      * @param moviesJson The JSON repsonse encapsulated in a String
+     * @param context
      * @return an ArrayList of {@link Movie} objects
      * @throws JSONException
      */
-    public static ArrayList<Movie> getMoviesListFromJson(String moviesJson) throws JSONException {
+    public static ArrayList<Movie> getMoviesListFromJson(String moviesJson, Context context) throws JSONException, IOException {
 
         ArrayList<Movie> movies = new ArrayList<>();
 
@@ -104,16 +159,36 @@ public final class MoviesUtils {
         for(int i=0; i<results.length(); i++){
             JSONObject object = results.getJSONObject(i);
             String posterpath = object.getString("poster_path");
+            String completePosterPath = imageUrlBuilder(posterpath);
+
             String overview = object.getString("overview");
             String releaseDate = object.getString("release_date");
             String originalTitle = object.getString("original_title");
             double voteAverage = object.getDouble("vote_average");
-            ArrayList<String> videos;
-            ArrayList<String> reviews;
 
-            String completePosterPath = imageUrlBuilder(posterpath);
+            int id = object.getInt("id");
+            String movieDetails = getResponseFromWeb(buildDetailURL(id, context));
+            JSONObject responseDetail = new JSONObject(movieDetails);
+
+            JSONObject objectVideos = responseDetail.getJSONObject("videos");
+            JSONArray resultsVideos = objectVideos.getJSONArray("results");
+            ArrayList<String> videoKeys = new ArrayList<>();
+            for(int j=0; j<resultsVideos.length(); j++){
+                JSONObject video = resultsVideos.getJSONObject(j);
+                String key = video.getString("key");
+                videoKeys.add(key);
+            }
+            JSONObject objectReviews = responseDetail.getJSONObject("reviews");
+            JSONArray resultsReviews = objectReviews.getJSONArray("results");
+            ArrayList<String> reviews = new ArrayList<>();
+            for(int k=0; k<resultsReviews.length(); k++){
+                JSONObject review = resultsReviews.getJSONObject(k);
+                String content = review.getString("content");
+                reviews.add(content);
+            }
+
             //TODO: After testing uncomment and add real trailers and reviews
-            //movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage));
+            movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage, videoKeys, reviews));
         }
         return movies;
     }

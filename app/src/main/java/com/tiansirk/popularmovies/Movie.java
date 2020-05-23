@@ -16,7 +16,7 @@ public class Movie implements Parcelable {
     private String releaseDate;
     private String title;
     private double userRating;
-    private List<String> videos;
+    private List<String> videoKeys;
     private List<String> reviews;
 
     @Override
@@ -33,7 +33,7 @@ public class Movie implements Parcelable {
         parcel.writeString(releaseDate);
         parcel.writeString(title);
         parcel.writeDouble(userRating);
-        parcel.writeList(videos);
+        parcel.writeList(videoKeys);
         parcel.writeList(reviews);
     }
     /**
@@ -67,17 +67,17 @@ public class Movie implements Parcelable {
      * @param releaseDate String with any length
      * @param originalTitle String with any length
      * @param voteAverage a double
-     * @param videos A List of Strings with any length or empty List
+     * @param videoKeys A List of Strings with any length or empty List
      * @param reviews A List of Strings with any length or empty List
      */
     public Movie(String posterPath, String overview, String releaseDate, String originalTitle, double voteAverage,
-                 List<String> videos, List<String> reviews){
+                 List<String> videoKeys, List<String> reviews){
         this.posterImgUrl = posterPath;
         this.plotSynopsis = overview;
         this.releaseDate = releaseDate;
         this.title = originalTitle;
         this.userRating = voteAverage;
-        this.videos = videos;
+        this.videoKeys = videoKeys;
         this.reviews = reviews;
     }
 
@@ -110,8 +110,8 @@ public class Movie implements Parcelable {
      * youtube link of "https://www.youtube.com/watch?v={ID}" to get the video played with/on youtube (app/web).
      * @return List of Strings representing youtube video _key_
      */
-    public List<String> getVideos() {
-        return videos;
+    public List<String> getVideoKeys() {
+        return videoKeys;
     }
 
     /**
@@ -125,8 +125,8 @@ public class Movie implements Parcelable {
         return !posterImgUrl.isEmpty();
     }
 
-    private boolean hasVideos(){
-        return !videos.isEmpty();
+    private boolean hasVideoKeys(){
+        return !videoKeys.isEmpty();
     }
 
     private boolean hasReviews(){
@@ -141,7 +141,7 @@ public class Movie implements Parcelable {
                 "\n Plot synopsis: " + getPlotSynopsis().substring(0,21) + "..." +
                 "\n Release date: " + getReleaseDate() +
                 "\n User rating: " + getUserRating() +
-                "\n No. of Videos: " + getVideos().size() +
+                "\n No. of Videos: " + getVideoKeys().size() +
                 "\n No. of reviews: " +getReviews().size();
     }
 

@@ -82,11 +82,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         AppExecutors.getInstance().networkIO().execute(new Runnable() {
             @Override
             public void run() {
-                URL url = MoviesUtils.buildUrl(mUsersPreference, MainActivity.this);
+                URL url = MoviesUtils.buildListUrl(mUsersPreference, MainActivity.this);
                 try {
                     String jsonResponse = MoviesUtils.getResponseFromWeb(url);
                     //Log.d(TAG, "jsonResponse: " + jsonResponse);
-                    final ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
+                    final ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse, MainActivity.this);
                     Log.d(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
                             "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
 
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             }
                         }
                     });
-
+                // TODO: After testing with dummy add: | JSONException e
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
                 }
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             }
         });
     }
-
+//TODO: unused can be deleted
     public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
         @Override
         protected void onPreExecute() {
@@ -120,12 +120,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         protected ArrayList<Movie> doInBackground(String... strings) {
             String receivedQueryParam = strings[0];
-            URL url = MoviesUtils.buildUrl(receivedQueryParam, MainActivity.this);
+            URL url = MoviesUtils.buildListUrl(receivedQueryParam, MainActivity.this);
             try {
                 String jsonResponse = MoviesUtils.getResponseFromWeb(url);
                 //Log.d(TAG, "jsonResponse: " + jsonResponse);
 
-                ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse);
+                ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse, MainActivity.this);
                 Log.d(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
                         "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
                 return moviesFetchedFromJson;
