@@ -1,6 +1,7 @@
 package com.tiansirk.popularmovies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     private List<String> mReviewData;
 
-    public ReviewAdapter() {
+    public ReviewAdapter(Movie movie) {
         mReviewData = new ArrayList<>();
+        mReviewData.addAll(movie.getReviews());
+        Log.d(TAG, "Reviews loaded into Adapter: " + mReviewData.size());
     }
 
 
@@ -51,14 +54,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     @Override
     public void onBindViewHolder(@NonNull ReviewAdapter.ReviewViewHolder holder, int position) {
         String s [] = mReviewData.get(position).split(MoviesUtils.DELIMITER);
+        Log.d(TAG, "Author and content: " + s[0] + s[1]);
         holder.mReviewAuthorTextView.setText(s[0]);
         holder.mReviewContentTextView.setText(s[1]);
     }
 
     @Override
     public int getItemCount() {
-        if(mReviewData.isEmpty()) return 0;
-        return mReviewData.size();
+        if(mReviewData == null) return 0;
+        else if(mReviewData.isEmpty()) return 0;
+        else return mReviewData.size();
     }
 
     public void setReviewData (List<String> reviewData){

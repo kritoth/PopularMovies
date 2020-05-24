@@ -1,6 +1,7 @@
 package com.tiansirk.popularmovies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     private List<String> mTrailerData;
 
-    public TrailerAdapter() {
+    public TrailerAdapter(Movie movie) {
         mTrailerData = new ArrayList<>();
+        mTrailerData.addAll(movie.getVideoKeys());
+        Log.d(TAG, "Trailers loaded into Adapter: " + mTrailerData.size());
     }
 
     public class TrailerViewHolder extends RecyclerView.ViewHolder{
@@ -54,7 +57,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     @Override
     public int getItemCount() {
-        if(mTrailerData.isEmpty()) return 0;
+        if(mTrailerData == null) return 0;
+        else if(mTrailerData.isEmpty()) return 0;
         return mTrailerData.size();
     }
 

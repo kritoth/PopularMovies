@@ -3,6 +3,7 @@ package com.tiansirk.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -51,15 +52,17 @@ public class Movie implements Parcelable {
         }
     };
 
-    // Parcelling part of constructor. Reads from the Parcel that was written into above Must maintain the same order of the fields
+    // Parcelling part of constructor. Reads from the Parcel that was written into above. Must maintain the same order of the fields
     public Movie(Parcel in){
         this.posterImgUrl = in.readString();
         this.plotSynopsis = in.readString();
         this.releaseDate = in.readString();
         this.title = in.readString();
         this.userRating = in.readDouble();
-        in.readArrayList(null);
-        in.readArrayList(null);
+        videoKeys = new ArrayList<String>();
+        in.readList(videoKeys, Movie.class.getClassLoader());
+        reviews = new ArrayList<String>();
+        in.readList(reviews, Movie.class.getClassLoader());
         this.onlineId = in.readInt();
     }
 
@@ -80,8 +83,10 @@ public class Movie implements Parcelable {
         this.releaseDate = releaseDate;
         this.title = originalTitle;
         this.userRating = voteAverage;
-        this.videoKeys = videoKeys;
-        this.reviews = reviews;
+        this.videoKeys = new ArrayList<>();
+        this.videoKeys.addAll(videoKeys);
+        this.reviews = new ArrayList<>();
+        this.reviews.addAll(reviews);
         this.onlineId = id;
     }
 
@@ -150,7 +155,9 @@ public class Movie implements Parcelable {
                 "\n Release date: " + getReleaseDate() +
                 "\n User rating: " + getUserRating() +
                 "\n No. of Videos: " + getVideoKeys().size() +
+
                 "\n No. of reviews: " + getReviews().size() +
+
                 "\n TMDB id: " + getOnlineId();
     }
 
