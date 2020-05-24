@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,10 +14,13 @@ import com.squareup.picasso.Picasso;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
 
     private ImageView mPoster;
@@ -30,6 +34,8 @@ public class DetailActivity extends AppCompatActivity {
 
     private RecyclerView mTrailerRV;
     private RecyclerView mReviewRV;
+    private TrailerAdapter mTrailerAdapter;
+    private ReviewAdapter mReviewAdapter;
 
     private Movie mMovie;
 
@@ -66,6 +72,19 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         }
+        Log.d(TAG, "Content of mMovie field is: " + mMovie.toString());
+
+        RecyclerView.LayoutManager reviewLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+        mReviewRV.setLayoutManager(reviewLayoutManager);
+        mReviewRV.setHasFixedSize(true);
+        mReviewAdapter = new ReviewAdapter(mMovie);
+        mReviewRV.setAdapter(mReviewAdapter);
+
+        RecyclerView.LayoutManager trailerLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+        mTrailerRV.setLayoutManager(trailerLayoutManager);
+        mTrailerRV.setHasFixedSize(true);
+        mTrailerAdapter = new TrailerAdapter(mMovie);
+        mTrailerRV.setAdapter(mTrailerAdapter);
 
         mFavoriteText = findViewById(R.id.detail_tv_favorite);
         //Todo: Check ROOM and reset its text according to its state (see strings.xml)
@@ -78,8 +97,6 @@ public class DetailActivity extends AppCompatActivity {
                 Toast.makeText(DetailActivity.this, "Favorite Star is clicked", Toast.LENGTH_LONG).show();
             }
         });
-
-        //TODO: it is inside a RecyclerView
 
 
     }

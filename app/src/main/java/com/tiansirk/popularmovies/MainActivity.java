@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onClick(Movie clickedMovie) {
-        Log.d(TAG, "Movie item clicked");
+        Log.d(TAG, "Movie item clicked: " + clickedMovie.toString());
 
         Intent activityIntent = new Intent(this, DetailActivity.class);
         activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
