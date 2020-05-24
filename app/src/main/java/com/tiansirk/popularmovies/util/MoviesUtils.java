@@ -35,13 +35,11 @@ public final class MoviesUtils {
     private static String title = "The Match ";
     private static double userRating = 0;
 
-    private Context mContext;
-
     private static final String TMDB_BASE_URL = "https://api.themoviedb.org/3/movie/";
     private static final String QUERY_PARAM_KEY = "api_key";
     private static final String APPEND_TO_RESPONSE = "append_to_response";
     private static final String[] SUB_REQUESTS = {"videos", "reviews"};
-    private static final String DELIMITER = ",";
+    public static final String DELIMITER = ",";
 
     private static final String IMG_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
@@ -167,6 +165,9 @@ public final class MoviesUtils {
             double voteAverage = object.getDouble("vote_average");
 
             int id = object.getInt("id");
+            //Todo: 1. get this new network request out
+            // 2. insert empty List<>s here and make the other second request when starting DetailActivity
+            // 3. for this the "id" of the Movie need to be saved into Movie
             String movieDetails = getResponseFromWeb(buildDetailURL(id, context));
             JSONObject responseDetail = new JSONObject(movieDetails);
 
@@ -183,12 +184,12 @@ public final class MoviesUtils {
             ArrayList<String> reviews = new ArrayList<>();
             for(int k=0; k<resultsReviews.length(); k++){
                 JSONObject review = resultsReviews.getJSONObject(k);
+                String author = review.getString("author");
                 String content = review.getString("content");
-                reviews.add(content);
+                reviews.add(author + DELIMITER + content);
             }
 
-            //TODO: After testing uncomment and add real trailers and reviews
-            movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage, videoKeys, reviews));
+            movies.add(new Movie(completePosterPath, overview, releaseDate, originalTitle, voteAverage, videoKeys, reviews, id));
         }
         return movies;
     }
@@ -207,7 +208,7 @@ public final class MoviesUtils {
      * This method generates fake movies to fill in the list of movies for testing purposes
      * @return dummy data
      */
-    public static ArrayList<Movie> getDummyMoviesList(){
+    public static ArrayList<Movie> getDummyMoviesList(String json, Context context) throws JSONException{
         ArrayList<Movie> fakeMovies = new ArrayList<>();
         for(int i=0; i<NUMBER_OF_MOVIES; i++){
             fakeMovies.add(new Movie(
@@ -215,10 +216,11 @@ public final class MoviesUtils {
                     plotSynopsis + i + " foxes chasing around.",
                     releaseDate + i,
                     title + i,
-                    userRating + randomModifier(),
+                    userRating + randomModifier(10),
                     dummyTrailers(),
-                    dummyReviews())
-            );
+                    dummyReviews(),
+                    (int)randomModifier(999)
+            ));
         }
         return fakeMovies;
     }
@@ -228,7 +230,7 @@ public final class MoviesUtils {
      */
     private static ArrayList<String> dummyTrailers(){
         ArrayList<String> dummyTrailers = new ArrayList<>();
-        for(int i=0; i<randomModifier(); i++){
+        for(int i=0; i<randomModifier(4); i++){
             dummyTrailers.add("http:\\www.video-is-here\\" + i);
         }
         return dummyTrailers;
@@ -239,7 +241,7 @@ public final class MoviesUtils {
      */
     private static ArrayList<String> dummyReviews(){
         ArrayList<String> dummyReviews = new ArrayList<>();
-        for(int i=0; i<randomModifier(); i++){
+        for(int i=0; i<randomModifier(10); i++){
             dummyReviews.add("Review:\nThis Movie is great!\n" + i + "/10 star!");
         }
         return dummyReviews;
@@ -248,9 +250,9 @@ public final class MoviesUtils {
      * Helper method for generating dummy data
      * @return a random double bween 0 and 10
      */
-    private static double randomModifier() {
+    private static double randomModifier(int bound) {
         Random r = new Random();
-        return r.nextInt(10) + r.nextDouble();
+        return r.nextInt(bound) + r.nextDouble();
     }
 
 }

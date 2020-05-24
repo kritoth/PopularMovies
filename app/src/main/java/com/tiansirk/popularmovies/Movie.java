@@ -18,6 +18,7 @@ public class Movie implements Parcelable {
     private double userRating;
     private List<String> videoKeys;
     private List<String> reviews;
+    private int onlineId;
 
     @Override
     public int describeContents() {
@@ -35,6 +36,7 @@ public class Movie implements Parcelable {
         parcel.writeDouble(userRating);
         parcel.writeList(videoKeys);
         parcel.writeList(reviews);
+        parcel.writeInt(onlineId);
     }
     /**
      * This is used to regenerate Movie object. All Parcelables must have a CREATOR that implements these two methods
@@ -58,6 +60,7 @@ public class Movie implements Parcelable {
         this.userRating = in.readDouble();
         in.readArrayList(null);
         in.readArrayList(null);
+        this.onlineId = in.readInt();
     }
 
     /**
@@ -71,7 +74,7 @@ public class Movie implements Parcelable {
      * @param reviews A List of Strings with any length or empty List
      */
     public Movie(String posterPath, String overview, String releaseDate, String originalTitle, double voteAverage,
-                 List<String> videoKeys, List<String> reviews){
+                 List<String> videoKeys, List<String> reviews, int id){
         this.posterImgUrl = posterPath;
         this.plotSynopsis = overview;
         this.releaseDate = releaseDate;
@@ -79,6 +82,7 @@ public class Movie implements Parcelable {
         this.userRating = voteAverage;
         this.videoKeys = videoKeys;
         this.reviews = reviews;
+        this.onlineId = id;
     }
 
     /**
@@ -121,6 +125,10 @@ public class Movie implements Parcelable {
         return reviews;
     }
 
+    public int getOnlineId() {
+        return onlineId;
+    }
+
     private boolean hasImage(){
         return !posterImgUrl.isEmpty();
     }
@@ -142,7 +150,8 @@ public class Movie implements Parcelable {
                 "\n Release date: " + getReleaseDate() +
                 "\n User rating: " + getUserRating() +
                 "\n No. of Videos: " + getVideoKeys().size() +
-                "\n No. of reviews: " +getReviews().size();
+                "\n No. of reviews: " + getReviews().size() +
+                "\n TMDB id: " + getOnlineId();
     }
 
 }
