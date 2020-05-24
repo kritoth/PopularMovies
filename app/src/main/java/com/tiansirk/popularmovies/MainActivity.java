@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.tiansirk.popularmovies.data.Movie;
+import com.tiansirk.popularmovies.ui.MovieAdapter;
 import com.tiansirk.popularmovies.util.AppExecutors;
 import com.tiansirk.popularmovies.util.MoviesUtils;
 

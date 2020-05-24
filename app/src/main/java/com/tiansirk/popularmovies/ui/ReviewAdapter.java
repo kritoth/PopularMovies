@@ -1,4 +1,4 @@
-package com.tiansirk.popularmovies;
+package com.tiansirk.popularmovies.ui;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tiansirk.popularmovies.data.Movie;
+import com.tiansirk.popularmovies.R;
 import com.tiansirk.popularmovies.util.MoviesUtils;
 
 import java.util.ArrayList;

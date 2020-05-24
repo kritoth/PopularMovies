@@ -1,4 +1,4 @@
-package com.tiansirk.popularmovies;
+package com.tiansirk.popularmovies.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

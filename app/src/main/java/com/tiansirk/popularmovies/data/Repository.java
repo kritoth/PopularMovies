@@ -2,19 +2,6 @@ package com.tiansirk.popularmovies.data;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-
-import com.tiansirk.popularmovies.MainActivity;
-import com.tiansirk.popularmovies.Movie;
-import com.tiansirk.popularmovies.MovieAdapter;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 
 public class Repository {
 

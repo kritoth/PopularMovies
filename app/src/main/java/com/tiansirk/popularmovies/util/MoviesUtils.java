@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.tiansirk.popularmovies.Movie;
+import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.R;
 
 import org.json.JSONArray;
