@@ -97,21 +97,15 @@ public final class MoviesUtils {
      * Build the URL for a youtube video of a single Movie
      * It builds as follows:  https://www.youtube.com/watch?v={videoKey}
      * @param videoKey: The key of the video on youtube
-     * @return the built URL
+     * @return the built Uri
      */
-    public static URL buildVideoURL(String videoKey){
+    public static Uri buildVideoURL(String videoKey){
         Uri builtUri = Uri.parse(YOUTUBE_WATCH_URL).buildUpon()
                 .appendQueryParameter(YOUTUBE_QUERY_PARAM_KEY, videoKey)
                 .build();
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        Log.d(TAG, "Built Youtube URI: " + url);
+        Log.d(TAG, "Built Youtube URI: " + builtUri);
 
-        return url;
+        return builtUri;
     }
 
     /**

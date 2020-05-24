@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.R;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,14 +23,23 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     private static final String TAG = TrailerAdapter.class.getSimpleName();
 
     private List<String> mTrailerData;
+    private final TrailerAdapterOnClickHandler mClickHandler;
 
-    public TrailerAdapter(Movie movie) {
+    /**
+     * The interface that receives onClick messages.
+     */
+    public interface TrailerAdapterOnClickHandler {
+        void onClick(String clickedTrailerUrl);
+    }
+
+    public TrailerAdapter(Movie movie, TrailerAdapterOnClickHandler onClickHandler) {
         mTrailerData = new ArrayList<>();
         mTrailerData.addAll(movie.getVideoKeys());
+        mClickHandler = onClickHandler;
         Log.d(TAG, "Trailers loaded into Adapter: " + mTrailerData.size());
     }
 
-    public class TrailerViewHolder extends RecyclerView.ViewHolder{
+    public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final ImageView mPlayButtonView;
         public final TextView mTrailerTitle;
 
@@ -37,6 +47,13 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
             super(itemView);
             mPlayButtonView = itemView.findViewById(R.id.trailer_item_iv_play_button);
             mTrailerTitle = itemView.findViewById(R.id.trailer_item_tv_title);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            String trailerUrlKey = mTrailerData.get(clickedPosition);
+            mClickHandler.onClick(trailerUrlKey);
         }
     }
 
@@ -54,7 +71,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     @Override
     public void onBindViewHolder(@NonNull TrailerAdapter.TrailerViewHolder holder, int position) {
-        String titleForThisItem = mTrailerData.get(position);
+        String titleForThisItem = "Trailer " + position;
         holder.mTrailerTitle.setText(titleForThisItem);
     }
 

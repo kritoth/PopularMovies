@@ -14,13 +14,16 @@ import com.squareup.picasso.Picasso;
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.ui.ReviewAdapter;
 import com.tiansirk.popularmovies.ui.TrailerAdapter;
+import com.tiansirk.popularmovies.util.MoviesUtils;
+
+import java.net.URL;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
@@ -85,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
         RecyclerView.LayoutManager trailerLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
         mTrailerRV.setLayoutManager(trailerLayoutManager);
         mTrailerRV.setHasFixedSize(true);
-        mTrailerAdapter = new TrailerAdapter(mMovie);
+        mTrailerAdapter = new TrailerAdapter(mMovie, this);
         mTrailerRV.setAdapter(mTrailerAdapter);
 
         mFavoriteText = findViewById(R.id.detail_tv_favorite);
@@ -101,5 +104,15 @@ public class DetailActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    public void onClick(String clickedTrailerUrl) {
+        Log.d(TAG, "Trailer item clicked: " + clickedTrailerUrl);
+
+        Intent webIntent = new Intent(Intent.ACTION_VIEW, MoviesUtils.buildVideoURL(clickedTrailerUrl));
+        if (webIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(webIntent);
+        }
     }
 }
