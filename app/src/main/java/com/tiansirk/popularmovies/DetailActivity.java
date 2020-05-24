@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -27,8 +28,8 @@ public class DetailActivity extends AppCompatActivity {
     private ImageView mFavoriteButton;
     private TextView mFavoriteText;
 
-    private ImageView mTrailerPlay;
-    private TextView mTrailerTitle;
+    private RecyclerView mTrailerRV;
+    private RecyclerView mReviewRV;
 
     private Movie mMovie;
 
@@ -41,7 +42,12 @@ public class DetailActivity extends AppCompatActivity {
         mTitleView = findViewById(R.id.detail_tv_title);
         mReleaseDateView = findViewById(R.id.detail_tv_release_date);
         mRatingView = findViewById(R.id.detail_tv_rating);
+        mFavoriteButton = findViewById(R.id.detail_iv_favorite);
+        mFavoriteText = findViewById(R.id.detail_tv_favorite);
         mPlotView = findViewById(R.id.detail_tv_overview);
+
+        mReviewRV = findViewById(R.id.detail_rv_review_holder);
+        mTrailerRV = findViewById(R.id.detail_rv_trailer_holder);
 
         Intent receivedIntent = getIntent();
         if(receivedIntent != null) {
@@ -73,19 +79,8 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        //TODO: it is inside a RecyclerView
 
-        mTrailerTitle = findViewById(R.id.trailer_item_tv_title);
-        // Todo: Set its text if there is a title for the trailer. Check the youtube API and set/create Movie field
-
-
-        mTrailerPlay = findViewById(R.id.trailer_item_iv_play_button);
-        mTrailerPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO: Add Implicit Intent to open up video player to the weblink
-                Toast.makeText(DetailActivity.this, "Play button is clicked", Toast.LENGTH_LONG).show();
-            }
-        });
 
     }
 }
