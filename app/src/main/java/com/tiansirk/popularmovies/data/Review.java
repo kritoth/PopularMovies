@@ -15,7 +15,7 @@ public class Review {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private int movieId;
+    private int movieId; //This is the Foreign Key
     private String review;
 
     public Review(int id, int movieId, String review) {

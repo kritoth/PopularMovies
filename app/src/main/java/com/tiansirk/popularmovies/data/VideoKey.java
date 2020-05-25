@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey;
 public class VideoKey {
 @PrimaryKey(autoGenerate = true)
     private int id;
-    private int movieId;
+    private int movieId; //This is the Foreign Key
     private String videoKey;
 
     @Ignore
