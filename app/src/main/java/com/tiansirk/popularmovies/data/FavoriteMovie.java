@@ -1,5 +1,7 @@
 package com.tiansirk.popularmovies.data;
 
+import java.util.Date;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -13,6 +15,7 @@ public class FavoriteMovie {
     private String releaseDate;
     private String title;
     private double userRating;
+    private Date dateAdded;
     @PrimaryKey
     @NonNull
     private int onlineId; // equals to TMDB id, should never be null
@@ -24,15 +27,17 @@ public class FavoriteMovie {
      * @param releaseDate String with any length
      * @param originalTitle String with any length
      * @param voteAverage a double
+     * @param dateAdded the date when the instance created
      * @param onlineId The id of the Movie in TMDB
      */
     public FavoriteMovie(String posterPath, String overview, String releaseDate, String originalTitle,
-                         double voteAverage, int onlineId){
+                         double voteAverage, Date dateAdded, int onlineId){
         this.posterImgUrl = posterPath;
         this.plotSynopsis = overview;
         this.releaseDate = releaseDate;
         this.title = originalTitle;
         this.userRating = voteAverage;
+        this.dateAdded = dateAdded;
         this.onlineId = onlineId;
     }
 
@@ -58,6 +63,10 @@ public class FavoriteMovie {
 
     public double getUserRating() {
         return userRating;
+    }
+
+    public Date getDateAdded() {
+        return dateAdded;
     }
 
     public int getOnlineId() {
