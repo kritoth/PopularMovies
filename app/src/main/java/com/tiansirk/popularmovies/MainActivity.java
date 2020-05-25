@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.ui.MovieAdapter;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
-    private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: top_rated
+    private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: favorites, top_rated, upcoming, latest, now_playing
 
     private String mUsersPreference;
     private RecyclerView mRecyclerView;
@@ -104,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             }
                         }
                     });
-                // TODO: After testing with dummy add: | JSONException e
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
                 }
@@ -209,15 +209,28 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mUsersPreference = "top_rated";
                 loadMovieData();
                 return true;
-                /*
-            case R.id.favorite:
-                Log.d(TAG, "Favorite menu item selected");
-                mAdapter = new MovieAdapter(this);
+
+            case R.id.now_playing:
+                Log.d(TAG, "Now playing menu item selected");
+                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
                 mRecyclerView.setAdapter(mAdapter);
-                mUsersPreference = "favorite";
+                mUsersPreference = "now_playing";
                 loadMovieData();
                 return true;
-                */
+
+            case R.id.upcoming:
+                Log.d(TAG, "Upcoming menu item selected");
+                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
+                mRecyclerView.setAdapter(mAdapter);
+                mUsersPreference = "upcoming";
+                loadMovieData();
+                return true;
+
+            case R.id.favorite:
+                Log.d(TAG, "Favorite menu item selected");
+                Toast.makeText(MainActivity.this, "Favorites selected", Toast.LENGTH_LONG).show();
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

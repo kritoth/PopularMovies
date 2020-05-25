@@ -18,4 +18,7 @@
     <string name="content_description_star_favorite">A star for making favorite</string>
     <string name="hint_review_author">Review author should be here</string>
     <string name="hint_review_content">Review content should be here</string>
+    <string name="menu_item_favorites">Favorites</string>
+    <string name="menu_item_now_playing">Now Playing</string>
+    <string name="menu_item_upcoming">Upcoming Movies</string>
 </resources>
