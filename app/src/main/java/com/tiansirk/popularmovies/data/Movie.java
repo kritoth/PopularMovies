@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
  * Class for Movie objects to be presented to the user.
  */
 public class Movie implements Parcelable {
+
     private String posterImgUrl;
     private String plotSynopsis;
     private String releaseDate;
@@ -75,9 +76,10 @@ public class Movie implements Parcelable {
      * @param voteAverage a double
      * @param videoKeys A List of Strings with any length or empty List
      * @param reviews A List of Strings with any length or empty List
+     * @param onlineId The id of the Movie in TMDB
      */
     public Movie(String posterPath, String overview, String releaseDate, String originalTitle, double voteAverage,
-                 List<String> videoKeys, List<String> reviews, int id){
+                 List<String> videoKeys, List<String> reviews, int onlineId){
         this.posterImgUrl = posterPath;
         this.plotSynopsis = overview;
         this.releaseDate = releaseDate;
@@ -87,7 +89,7 @@ public class Movie implements Parcelable {
         this.videoKeys.addAll(videoKeys);
         this.reviews = new ArrayList<>();
         this.reviews.addAll(reviews);
-        this.onlineId = id;
+        this.onlineId = onlineId;
     }
 
     /**
@@ -116,7 +118,7 @@ public class Movie implements Parcelable {
 
     /**
      * A List of _key_ Strings of video resources available on youtube. The _key_ can be added to the URL of the
-     * youtube link of "https://www.youtube.com/watch?v={ID}" to get the video played with/on youtube (app/web).
+     * youtube link of "https://www.youtube.com/watch?v={_key_}" to get the video played with/on youtube (app/web).
      * @return List of Strings representing youtube video _key_
      */
     public List<String> getVideoKeys() {
@@ -124,7 +126,7 @@ public class Movie implements Parcelable {
     }
 
     /**
-     * @return List of reviews as Strings
+     * @return List of reviews as Strings as author+DELIMITER+content
      */
     public List<String> getReviews() {
         return reviews;
