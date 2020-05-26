@@ -22,7 +22,7 @@ public interface MovieDAO {
     FavoriteMovie loadFavMovie(int id);
 
     @Insert
-    int insertFavMovie(FavoriteMovie movie);
+    void insertFavMovie(FavoriteMovie movie);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateFavMovie(FavoriteMovie movie);
@@ -34,7 +34,7 @@ public interface MovieDAO {
     List<Review> loadAllReviews();
 
     @Insert
-    int insertReview(Review review);
+    void insertReview(Review review);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateReview(Review review);
@@ -42,11 +42,11 @@ public interface MovieDAO {
     @Delete
     void deleteReview(Review review);
 
-    @Query("SELECT * FROM reviews_table")
+    @Query("SELECT * FROM videokeys_table")
     List<VideoKey> loadAllTrailers();
 
     @Insert
-    int insertTrailer(VideoKey videoKey);
+    void insertTrailer(VideoKey videoKey);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     int updateTrailer(VideoKey videoKey);

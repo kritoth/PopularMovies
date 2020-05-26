@@ -1,5 +1,6 @@
 package com.tiansirk.popularmovies.data;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -12,11 +13,11 @@ import androidx.room.PrimaryKey;
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE))
 public class Review {
-
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @ColumnInfo(index = true)
     private int movieId; //This is the Foreign Key
     private String review;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
     public Review(int id, int movieId, String review) {
         this.id = id;

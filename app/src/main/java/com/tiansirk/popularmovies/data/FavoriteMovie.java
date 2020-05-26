@@ -20,6 +20,9 @@ public class FavoriteMovie {
     @NonNull
     private int onlineId; // equals to TMDB id, should never be null
 
+    public FavoriteMovie() {
+    }
+
     /**
      * Constructor for Movie item. If any of the required params are not existing then an empty object of that type needed to be inserted
      * @param posterPath Complete URL path for an image resource as String
@@ -30,6 +33,7 @@ public class FavoriteMovie {
      * @param dateAdded the date when the instance created
      * @param onlineId The id of the Movie in TMDB
      */
+    @Ignore
     public FavoriteMovie(String posterPath, String overview, String releaseDate, String originalTitle,
                          double voteAverage, Date dateAdded, int onlineId){
         this.posterImgUrl = posterPath;
@@ -73,18 +77,31 @@ public class FavoriteMovie {
         return onlineId;
     }
 
-    private boolean hasImage(){
-        return !posterImgUrl.isEmpty();
+    public void setPosterImgUrl(String posterImgUrl) {
+        this.posterImgUrl = posterImgUrl;
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "\n Title: " + getTitle() +
-                "\n Has a poster: " + hasImage() +
-                "\n Plot synopsis: " + getPlotSynopsis().substring(0,21) + "..." +
-                "\n Release date: " + getReleaseDate() +
-                "\n User rating: " + getUserRating() +
-                "\n TMDB id: " + getOnlineId();
+    public void setPlotSynopsis(String plotSynopsis) {
+        this.plotSynopsis = plotSynopsis;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setUserRating(double userRating) {
+        this.userRating = userRating;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    public void setOnlineId(int onlineId) {
+        this.onlineId = onlineId;
     }
 }

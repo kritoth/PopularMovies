@@ -98,8 +98,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
      *
      * @param movies The list of Movies to set to the Adapter
      */
-    public void setMovieData(ArrayList movies) {
+    public void setMovieData(ArrayList<Movie> movies) {
         mMovieData.addAll(movies);
         notifyDataSetChanged();
     }
+
 }

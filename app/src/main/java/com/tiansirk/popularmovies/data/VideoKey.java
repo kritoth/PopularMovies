@@ -1,5 +1,6 @@
 package com.tiansirk.popularmovies.data;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -12,10 +13,11 @@ import androidx.room.PrimaryKey;
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE))
 public class VideoKey {
-@PrimaryKey(autoGenerate = true)
-    private int id;
+    @ColumnInfo(index = true)
     private int movieId; //This is the Foreign Key
     private String videoKey;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
     @Ignore
     public VideoKey(String videoKey, int movieId) {
