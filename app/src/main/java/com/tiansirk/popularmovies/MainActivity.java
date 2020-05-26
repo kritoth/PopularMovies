@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
     private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: favorites, top_rated, upcoming, latest, now_playing
+    private static final String INSTANCE_MOVIEADAPTER = "adapter_state";
 
     private String mUsersPreference;
     private RecyclerView mRecyclerView;
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
+        if(savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_MOVIEADAPTER)){
+            mUsersPreference = savedInstanceState.getString(INSTANCE_MOVIEADAPTER);
+        }
         loadMovieData();
     }
 
@@ -67,12 +71,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      * Default preference is "popular"
      */
     private void loadMovieData() {
-        String usersPreference = "";
-        if (mUsersPreference == null || mUsersPreference.isEmpty()) {
-            usersPreference = DEFAULT_USER_PREFERENCE;
-        } else {
-            usersPreference = mUsersPreference;
-        }
         //TODO: AsyncTask changed to Executor:
 
 //        FetchMovieTask task = new FetchMovieTask();
@@ -181,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(activityIntent);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -233,5 +230,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+
+        outState.putString(INSTANCE_MOVIEADAPTER, mUsersPreference);
+        super.onSaveInstanceState(outState);
     }
 }
