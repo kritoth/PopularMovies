@@ -45,6 +45,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_MOVIEADAPTER)){
+            Log.d(TAG, "mUsersPreference restored: " + mUsersPreference);
+            mUsersPreference = savedInstanceState.getString(INSTANCE_MOVIEADAPTER);
+        }
+
         setContentView(R.layout.activity_main);
 
         mRecyclerView = findViewById(R.id.recyclerview_movies);
@@ -60,9 +66,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_MOVIEADAPTER)){
-            mUsersPreference = savedInstanceState.getString(INSTANCE_MOVIEADAPTER);
-        }
         loadMovieData();
     }
 
@@ -236,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onSaveInstanceState(@NonNull Bundle outState) {
 
         outState.putString(INSTANCE_MOVIEADAPTER, mUsersPreference);
+        Log.d(TAG, "mUsersPreference's state is saved: " + mUsersPreference);
         super.onSaveInstanceState(outState);
     }
 }
