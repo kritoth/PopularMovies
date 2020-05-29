@@ -28,6 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             context.getApplicationContext(),
                             AppDatabase.class,
                             AppDatabase.DATABASE_NAME)
+                            .allowMainThreadQueries()
                             .build();
                 }
             }
@@ -36,6 +37,7 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    public abstract MovieDAO movieDAO();
-
+    public abstract FavoriteMovieDAO movieDAO();
+    public abstract TrailerDAO trailerDAO();
+    public abstract ReviewDAO reviewDAO();
 }

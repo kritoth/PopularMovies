@@ -11,12 +11,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.tiansirk.popularmovies.data.AppDatabase;
+import com.tiansirk.popularmovies.data.FavoriteMovie;
 import com.tiansirk.popularmovies.data.Movie;
+import com.tiansirk.popularmovies.data.Review;
+import com.tiansirk.popularmovies.data.VideoKey;
 import com.tiansirk.popularmovies.ui.ReviewAdapter;
 import com.tiansirk.popularmovies.ui.TrailerAdapter;
 import com.tiansirk.popularmovies.util.MoviesUtils;
 
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,10 +51,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private Movie mMovie;
 
+    private AppDatabase mDbase;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        mDbase = AppDatabase.getsInstance(getApplicationContext());
 
         mPoster = findViewById(R.id.detail_iv_poster_view);
         mTitleView = findViewById(R.id.detail_tv_title);
@@ -77,7 +88,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 }
             }
         }
-        Log.d(TAG, "Content of mMovie field is: " + mMovie.toString());
+        //Log.d(TAG, "Content of mMovie field is: " + mMovie.toString());
 
         RecyclerView.LayoutManager reviewLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
         mReviewRV.setLayoutManager(reviewLayoutManager);
@@ -92,14 +103,32 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRV.setAdapter(mTrailerAdapter);
 
         mFavoriteText = findViewById(R.id.detail_tv_favorite);
-        //Todo: Check ROOM and reset its text according to its state (see strings.xml)
+        //Todo: Check ROOM and reset its text and the star according to its state (see strings.xml)
 
         mFavoriteButton = findViewById(R.id.detail_iv_favorite);
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Add/Delete to/from ROOM and reset its drawable according to its state (bordered/filled star)
-                Toast.makeText(DetailActivity.this, "Favorite Star is clicked", Toast.LENGTH_LONG).show();
+                FavoriteMovie favoriteMovie = new FavoriteMovie(
+                        mMovie.getPosterImgUrl(),
+                        mMovie.getPlotSynopsis(),
+                        mMovie.getReleaseDate(),
+                        mMovie.getTitle(),
+                        mMovie.getUserRating(),
+                        today(),
+                        mMovie.getOnlineId());
+                long insertedFavMovieId = mDbase.movieDAO().insertFavMovie(favoriteMovie);
+                for(int i=0; i<mMovie.getReviews().size(); i++){
+                    mDbase.reviewDAO().insertReview(new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i)));
+                }
+
+                for(int j=0; j<mMovie.getVideoKeys().size(); j++){
+                    mDbase.trailerDAO().insertTrailer((new VideoKey(mMovie.getOnlineId(), mMovie.getVideoKeys().get(j))));
+                }
+                if(insertedFavMovieId > -1){
+                    Toast.makeText(getApplicationContext(), mMovie.getTitle() + " is saved as favorite!", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "FavoriteMovie INSERT succesfull");
+                }
             }
         });
 
@@ -115,4 +144,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             startActivity(webIntent);
         }
     }
+
+    private Date today(){
+        return Calendar.getInstance().getTime();
+    }
+
 }

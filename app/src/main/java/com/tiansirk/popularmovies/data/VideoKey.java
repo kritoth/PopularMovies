@@ -20,9 +20,9 @@ public class VideoKey {
     private int id;
 
     @Ignore
-    public VideoKey(String videoKey, int movieId) {
-        this.videoKey = videoKey;
+    public VideoKey(int movieId, String videoKey) {
         this.movieId = movieId;
+        this.videoKey = videoKey;
     }
 
     public VideoKey(int id, String videoKey, int movieId) {
@@ -45,5 +45,13 @@ public class VideoKey {
 
     public void setVideoKey(String videoKey) {
         this.videoKey = videoKey;
+    }
+
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
