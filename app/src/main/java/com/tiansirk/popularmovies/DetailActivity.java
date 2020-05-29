@@ -118,16 +118,23 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                         today(),
                         mMovie.getOnlineId());
                 long insertedFavMovieId = mDbase.movieDAO().insertFavMovie(favoriteMovie);
+                Log.d(TAG,
+                        "\nNo. of Reviews in Movie: " + mMovie.getReviews().size()
+                                + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
                 for(int i=0; i<mMovie.getReviews().size(); i++){
-                    mDbase.reviewDAO().insertReview(new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i)));
+                    Review currReview = new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i));
+                    mDbase.reviewDAO().insertReview(currReview);
+                    Log.d(TAG, "Inserted review:\n" + i + ": " + currReview.toString());
                 }
 
                 for(int j=0; j<mMovie.getVideoKeys().size(); j++){
-                    mDbase.trailerDAO().insertTrailer((new VideoKey(mMovie.getOnlineId(), mMovie.getVideoKeys().get(j))));
+                    VideoKey currVideoKey = new VideoKey(mMovie.getOnlineId(), mMovie.getVideoKeys().get(j));
+                    mDbase.trailerDAO().insertTrailer(currVideoKey);
+                    Log.d(TAG, "Inserted trailer:\n" + j + ": " + currVideoKey.toString());
                 }
                 if(insertedFavMovieId > -1){
                     Toast.makeText(getApplicationContext(), mMovie.getTitle() + " is saved as favorite!", Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "FavoriteMovie INSERT succesfull");
+                    Log.d(TAG, "FavoriteMovie INSERT successful");
                 }
             }
         });
