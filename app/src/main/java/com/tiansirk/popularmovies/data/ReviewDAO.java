@@ -16,10 +16,13 @@ public interface ReviewDAO {
 
     //Read
     @Query("SELECT * FROM reviews_table WHERE movieId= :movieId")
-    Review loadReview(int movieId);
+    List<Review> loadReviewsByMovie(int movieId);
 
     @Query("SELECT * FROM reviews_table")
     List<Review> loadAllReviews();
+
+    @Query("SELECT COUNT (id) FROM reviews_table")
+    int getReviewsCount();
 
     //Update
 
@@ -28,4 +31,6 @@ public interface ReviewDAO {
     @Delete
     int removeReview(Review review);
 
+    @Query("DELETE FROM reviews_table")
+    void deleteAllReview();
 }

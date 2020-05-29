@@ -16,10 +16,13 @@ public interface TrailerDAO {
 
     //Read
     @Query("SELECT * FROM videokeys_table WHERE movieId= :movieId")
-    VideoKey loadTrailer(int movieId);
+    List<VideoKey> loadTrailersByMovie(int movieId);
 
     @Query("SELECT * FROM videokeys_table")
     List<VideoKey> loadAllTrailers();
+
+    @Query("SELECT COUNT (id) FROM videokeys_table")
+    int getTrailersCount();
 
     //Update
 
@@ -27,4 +30,7 @@ public interface TrailerDAO {
     //Delete
     @Delete
     int removeTrailer(VideoKey videoKey);
+
+    @Query("DELETE FROM videokeys_table")
+    void deleteAllTrailer();
 }

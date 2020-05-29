@@ -15,20 +15,16 @@ public interface FavoriteMovieDAO {
 
     //Create
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    @Transaction
     long insertFavMovie(FavoriteMovie favoriteMovie);
 
     //Read
     @Query("SELECT * FROM fav_movies_table ORDER BY userRating")
-    @Transaction
     List<FavoriteMovie> loadAllFavMoviesByRating();
 
     @Query("SELECT * FROM fav_movies_table ORDER BY dateAdded")
-    @Transaction
     List<FavoriteMovie> loadAllFavMoviesByDateAdded();
 
     @Query("SELECT * FROM fav_movies_table WHERE onlineId= :id")
-    @Transaction
     FavoriteMovie loadFavMovie(int id);
 
     //Update
@@ -37,6 +33,9 @@ public interface FavoriteMovieDAO {
     //Delete
     @Delete
     int removeFavMovie(FavoriteMovie movie);
+
+    @Query("DELETE FROM fav_movies_table")
+    void deleteAllFavMovie();
 
 /*
     public void insertFavMovieWithReviewAndTrailer(FavoriteMovie movie, List<Review> reviews, List<VideoKey> videoKeys){
