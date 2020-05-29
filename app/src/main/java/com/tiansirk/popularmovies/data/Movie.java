@@ -7,20 +7,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.room.Ignore;
 
 /**
  * Class for Movie objects to be presented to the user.
  */
+
 public class Movie implements Parcelable {
 
+    @Ignore
     private String posterImgUrl;
+    @Ignore
     private String plotSynopsis;
+    @Ignore
     private String releaseDate;
+    @Ignore
     private String title;
+    @Ignore
     private double userRating;
+    @Ignore
     private List<String> videoKeys;
+    @Ignore
     private List<String> reviews;
+    @Ignore
     private int onlineId;
+
+    public Movie() {
+    }
 
     @Override
     public int describeContents() {

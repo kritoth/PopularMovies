@@ -64,7 +64,7 @@ public final class MoviesUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "Built Movie list URI: " + url);
+        //Log.d(TAG, "Built Movie list URI: " + url);
 
         return url;
     }
@@ -80,7 +80,7 @@ public final class MoviesUtils {
     public static URL buildDetailURL(int movieID, Context context){
         Uri builtUri = Uri.parse(TMDB_BASE_URL + movieID).buildUpon()
                 .appendQueryParameter(QUERY_PARAM_KEY, context.getString(R.string.THE_MOVIE_DB_API_TOKEN))
-                .appendQueryParameter(APPEND_TO_RESPONSE, TextUtils.join(DELIMITER, SUB_REQUESTS)) //TODO: vessző helyett %2C -t csinál
+                .appendQueryParameter(APPEND_TO_RESPONSE, TextUtils.join(DELIMITER, SUB_REQUESTS))
                 .build();
         URL url = null;
         try {
@@ -88,7 +88,7 @@ public final class MoviesUtils {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "Built Movie detail URI: " + builtUri);
+        //Log.d(TAG, "Built Movie detail URI: " + builtUri);
 
         return url;
     }

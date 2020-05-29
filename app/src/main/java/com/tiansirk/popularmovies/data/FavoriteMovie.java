@@ -8,7 +8,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "fav_movies_table")
-public class FavoriteMovie {
+public class FavoriteMovie extends Movie{
 
     private String posterImgUrl;
     private String plotSynopsis;
@@ -18,7 +18,7 @@ public class FavoriteMovie {
     private Date dateAdded;
     @PrimaryKey
     @NonNull
-    private int onlineId; // equals to TMDB id, should never be null
+    private int onlineId; // Equals to TMDB id, should never be null //This is the key used in {@class Review} and {@class Trailer} as FOREIGN KEY
 
     public FavoriteMovie() {
     }

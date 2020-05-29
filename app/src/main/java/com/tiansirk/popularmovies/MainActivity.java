@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tiansirk.popularmovies.data.FavoriteMovie;
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.ui.MovieAdapter;
 import com.tiansirk.popularmovies.util.AppExecutors;
@@ -228,7 +229,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             case R.id.favorite:
                 Log.d(TAG, "Favorite menu item selected");
-                Toast.makeText(MainActivity.this, "Favorites selected", Toast.LENGTH_LONG).show();
+                Intent activityIntent = new Intent(this, FavoriteActivity.class);
+                startActivity(activityIntent);
+                //Toast.makeText(MainActivity.this, "Favorites selected", Toast.LENGTH_LONG).show();
                 return true;
 
         }
