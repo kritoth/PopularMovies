@@ -20,12 +20,15 @@ public interface FavoriteMovieDAO {
 
     //Read
     @Query("SELECT * FROM fav_movies_table ORDER BY userRating")
+    @Transaction
     List<FavoriteMovie> loadAllFavMoviesByRating();
 
     @Query("SELECT * FROM fav_movies_table ORDER BY dateAdded")
+    @Transaction
     List<FavoriteMovie> loadAllFavMoviesByDateAdded();
 
     @Query("SELECT * FROM fav_movies_table WHERE onlineId= :id")
+    @Transaction
     FavoriteMovie loadFavMovie(int id);
 
     //Update

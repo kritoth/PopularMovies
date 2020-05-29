@@ -15,6 +15,9 @@ public interface TrailerDAO {
     long insertTrailer(VideoKey videoKey);
 
     //Read
+    @Query("SELECT * FROM videokeys_table WHERE movieId= :movieId")
+    VideoKey loadTrailer(int movieId);
+
     @Query("SELECT * FROM videokeys_table")
     List<VideoKey> loadAllTrailers();
 

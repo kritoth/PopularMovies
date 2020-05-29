@@ -15,6 +15,9 @@ public interface ReviewDAO {
     long insertReview(Review review);
 
     //Read
+    @Query("SELECT * FROM reviews_table WHERE movieId= :movieId")
+    Review loadReview(int movieId);
+
     @Query("SELECT * FROM reviews_table")
     List<Review> loadAllReviews();
 
