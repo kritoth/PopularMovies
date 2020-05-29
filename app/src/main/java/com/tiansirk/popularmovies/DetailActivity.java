@@ -18,6 +18,7 @@ import com.tiansirk.popularmovies.data.Review;
 import com.tiansirk.popularmovies.data.VideoKey;
 import com.tiansirk.popularmovies.ui.ReviewAdapter;
 import com.tiansirk.popularmovies.ui.TrailerAdapter;
+import com.tiansirk.popularmovies.util.AppExecutors;
 import com.tiansirk.popularmovies.util.MoviesUtils;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +36,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
+    private static final String INSTANCE_FAVORITE_STATUS = "favorite_status_state";
 
     private ImageView mPoster;
     private TextView mTitleView;
@@ -50,15 +53,17 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private ReviewAdapter mReviewAdapter;
 
     private Movie mMovie;
-
     private AppDatabase mDbase;
+    private boolean itIsFavorite;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mDbase = AppDatabase.getsInstance(getApplicationContext());
+        if(savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_FAVORITE_STATUS)){
+            itIsFavorite = savedInstanceState.getBoolean(INSTANCE_FAVORITE_STATUS);
+        }
 
         mPoster = findViewById(R.id.detail_iv_poster_view);
         mTitleView = findViewById(R.id.detail_tv_title);
@@ -102,44 +107,81 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerAdapter = new TrailerAdapter(mMovie, this);
         mTrailerRV.setAdapter(mTrailerAdapter);
 
-        mFavoriteText = findViewById(R.id.detail_tv_favorite);
-        //Todo: Check ROOM and reset its text and the star according to its state (see strings.xml)
-
-        mFavoriteButton = findViewById(R.id.detail_iv_favorite);
+        mDbase = AppDatabase.getsInstance(getApplicationContext());
+        // Check ROOM and reset the favorite text and star according to its status
+        setFavoriteStatus();
+        // OnClickListener for the FavoriteButton in the favorite section
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FavoriteMovie favoriteMovie = new FavoriteMovie(
-                        mMovie.getPosterImgUrl(),
-                        mMovie.getPlotSynopsis(),
-                        mMovie.getReleaseDate(),
-                        mMovie.getTitle(),
-                        mMovie.getUserRating(),
-                        today(),
-                        mMovie.getOnlineId());
-                long insertedFavMovieId = mDbase.movieDAO().insertFavMovie(favoriteMovie);
-                Log.d(TAG,
-                        "\nNo. of Reviews in Movie: " + mMovie.getReviews().size()
-                                + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
-                for(int i=0; i<mMovie.getReviews().size(); i++){
-                    Review currReview = new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i));
-                    mDbase.reviewDAO().insertReview(currReview);
-                    Log.d(TAG, "Inserted review:\n" + i + ": " + currReview.toString());
-                }
-
-                for(int j=0; j<mMovie.getVideoKeys().size(); j++){
-                    VideoKey currVideoKey = new VideoKey(mMovie.getOnlineId(), mMovie.getVideoKeys().get(j));
-                    mDbase.trailerDAO().insertTrailer(currVideoKey);
-                    Log.d(TAG, "Inserted trailer:\n" + j + ": " + currVideoKey.toString());
-                }
-                if(insertedFavMovieId > -1){
-                    Toast.makeText(getApplicationContext(), mMovie.getTitle() + " is saved as favorite!", Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "FavoriteMovie INSERT successful");
-                }
+                saveMovieAsFavorite();
             }
         });
+    }
 
+    /**
+     * Displays the Movie as Favorite by setting the text and image of the Favorite section of the UI
+     */
+    private void setFavoriteStatus() {
+        final FavoriteMovie[] favoriteMovie = new FavoriteMovie[1];
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                favoriteMovie[0] = loadFavoriteMovie();
+            }
+        });
+        if(favoriteMovie[0] == null) itIsFavorite = true;
+        else itIsFavorite = false;
 
+        if(itIsFavorite) {
+            mFavoriteButton.setImageResource(R.drawable.ic_star_filled_gold_24dp);
+            mFavoriteText.setText(R.string.marked_as_favorite);
+        }
+        else {
+            mFavoriteButton.setImageResource(R.drawable.ic_star_border_gold_24dp);
+            mFavoriteText.setText(R.string.mark_as_favorite);
+        }
+    }
+
+    /**
+     * Loads a FavoriteMovie object by querying the app's database using the id of the Movie as search term
+     * @return FavoriteMovie object from the App's Database
+     */
+    private FavoriteMovie loadFavoriteMovie() {
+        return mDbase.movieDAO().loadFavMovie(mMovie.getOnlineId());
+    }
+
+    /**
+     * Saves a Movie into the App's Database as FavoriteMovie
+     */
+    private void saveMovieAsFavorite() {
+        FavoriteMovie favoriteMovie = new FavoriteMovie(
+                mMovie.getPosterImgUrl(),
+                mMovie.getPlotSynopsis(),
+                mMovie.getReleaseDate(),
+                mMovie.getTitle(),
+                mMovie.getUserRating(),
+                today(),
+                mMovie.getOnlineId());
+        long insertedFavMovieId = mDbase.movieDAO().insertFavMovie(favoriteMovie);
+        Log.d(TAG,
+                "\nNo. of Reviews in Movie: " + mMovie.getReviews().size()
+                        + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
+        for(int i=0; i<mMovie.getReviews().size(); i++){
+            Review currReview = new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i));
+            mDbase.reviewDAO().insertReview(currReview);
+            Log.d(TAG, "Inserted review:\n" + i + ": " + currReview.toString());
+        }
+
+        for(int j=0; j<mMovie.getVideoKeys().size(); j++){
+            VideoKey currVideoKey = new VideoKey(mMovie.getOnlineId(), mMovie.getVideoKeys().get(j));
+            mDbase.trailerDAO().insertTrailer(currVideoKey);
+            Log.d(TAG, "Inserted trailer:\n" + j + ": " + currVideoKey.toString());
+        }
+        if(insertedFavMovieId > -1){
+            Toast.makeText(getApplicationContext(), mMovie.getTitle() + " is saved as favorite!", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "FavoriteMovie INSERT successful");
+        }
     }
 
     @Override
@@ -152,6 +194,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean(INSTANCE_FAVORITE_STATUS, itIsFavorite);
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Helper method to return the date of the day it's been called
+     * @return Date object of the same day
+     */
     private Date today(){
         return Calendar.getInstance().getTime();
     }
