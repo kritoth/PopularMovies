@@ -1,5 +1,6 @@
 package com.tiansirk.popularmovies.data;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -17,6 +18,7 @@ public class VideoKey {
     private int movieId; //This is the Foreign Key
     private String videoKey;
     @PrimaryKey(autoGenerate = true)
+    @NonNull
     private int id;
 
     @Ignore
@@ -47,11 +49,15 @@ public class VideoKey {
         this.videoKey = videoKey;
     }
 
-    public void setMovieId(int movieId) {
-        this.movieId = movieId;
-    }
-
     public void setId(int id) {
         this.id = id;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "\nMovie ID: " + getMovieId()
+                + "\nReview: " + getVideoKey().substring(0, 3) + " ..."
+                + "\nDbase Id: " + getId();
     }
 }
