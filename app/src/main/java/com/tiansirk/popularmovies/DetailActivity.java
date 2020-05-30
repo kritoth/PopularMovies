@@ -108,29 +108,30 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mTrailerRV.setAdapter(mTrailerAdapter);
 
         mDbase = AppDatabase.getsInstance(getApplicationContext());
+
         // Check ROOM and reset the favorite text and star according to its status
         setFavoriteStatus();
+
         // OnClickListener for the FavoriteButton in the favorite section
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveMovieAsFavorite();
+                //TODO: save only if status is false and add delete from dbase function to this button if status is true
+                if(itIsFavorite) saveMovieAsFavorite();
+                else removeFromFavorite();
             }
         });
     }
 
     /**
-     * Displays the Movie as Favorite by setting the text and image of the Favorite section of the UI
+     * Sets how to display the Movie: either as favorite or not by setting the text and image of the
+     * favorite section in the UI.
      */
     private void setFavoriteStatus() {
-        final FavoriteMovie[] favoriteMovie = new FavoriteMovie[1];
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                favoriteMovie[0] = loadFavoriteMovie();
-            }
-        });
-        if(favoriteMovie[0] == null) itIsFavorite = true;
+
+        FavoriteMovie loadedFavorite = loadFavoriteMovie();
+
+        if(loadedFavorite == null) itIsFavorite = true;
         else itIsFavorite = false;
 
         if(itIsFavorite) {
@@ -141,14 +142,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             mFavoriteButton.setImageResource(R.drawable.ic_star_border_gold_24dp);
             mFavoriteText.setText(R.string.mark_as_favorite);
         }
-    }
-
-    /**
-     * Loads a FavoriteMovie object by querying the app's database using the id of the Movie as search term
-     * @return FavoriteMovie object from the App's Database
-     */
-    private FavoriteMovie loadFavoriteMovie() {
-        return mDbase.movieDAO().loadFavMovie(mMovie.getOnlineId());
     }
 
     /**
@@ -163,27 +156,37 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 mMovie.getUserRating(),
                 today(),
                 mMovie.getOnlineId());
-        long insertedFavMovieId = mDbase.movieDAO().insertFavMovie(favoriteMovie);
-        Log.d(TAG,
-                "\nNo. of Reviews in Movie: " + mMovie.getReviews().size()
-                        + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
+        long insertedFavMovieId = insertFavoriteMovie(favoriteMovie);
+        Log.d(TAG, "\nNo. of Reviews in Movie: " + mMovie.getReviews().size() + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
+
         for(int i=0; i<mMovie.getReviews().size(); i++){
             Review currReview = new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i));
-            mDbase.reviewDAO().insertReview(currReview);
+            insertReview(currReview);
             Log.d(TAG, "Inserted review:\n" + i + ": " + currReview.toString());
         }
-
         for(int j=0; j<mMovie.getVideoKeys().size(); j++){
             VideoKey currVideoKey = new VideoKey(mMovie.getOnlineId(), mMovie.getVideoKeys().get(j));
-            mDbase.trailerDAO().insertTrailer(currVideoKey);
+            insertTrailer(currVideoKey);
             Log.d(TAG, "Inserted trailer:\n" + j + ": " + currVideoKey.toString());
         }
         if(insertedFavMovieId > -1){
             Toast.makeText(getApplicationContext(), mMovie.getTitle() + " is saved as favorite!", Toast.LENGTH_LONG).show();
             Log.d(TAG, "FavoriteMovie INSERT successful");
         }
+        else{
+            Toast.makeText(getApplicationContext(), "Saving " + mMovie.getTitle() + " as favorite was unsuccessful.", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "FavoriteMovie INSERT successful");
+        }
     }
 
+    /**
+     * Removes a Movie from the App's Database as FavoriteMovie
+     */
+    private void removeFromFavorite() {
+
+    }
+
+    //TODO: change to recyclerview clicklistener
     @Override
     public void onClick(String clickedTrailerUrl) {
         Log.d(TAG, "Trailer item clicked: " + clickedTrailerUrl);
@@ -198,6 +201,67 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putBoolean(INSTANCE_FAVORITE_STATUS, itIsFavorite);
         super.onSaveInstanceState(outState);
+    }
+
+
+    /**
+     * Loads a FavoriteMovie object by querying the app's Database using the id of the Movie as search term
+     * @return FavoriteMovie object from the app's Database
+     */
+    private FavoriteMovie loadFavoriteMovie() {
+        final FavoriteMovie[] loadedMovie = new FavoriteMovie[1];
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                loadedMovie[0] = mDbase.movieDAO().loadFavMovie(mMovie.getOnlineId());
+            }
+        });
+        return loadedMovie[0];
+    }
+
+    /**
+     * Inserts a FavoriteMovie object into the app's Database
+     * @return the iD of the new row from the app's Database
+     */
+    private long insertFavoriteMovie(final FavoriteMovie favoriteMovie){
+        final long[] iD = new long[1];
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                iD[0] = mDbase.movieDAO().insertFavMovie(favoriteMovie);
+            }
+        });
+        return iD[0];
+    }
+
+    /**
+     * Inserts a Review object into the app's Database
+     * @return the iD of the new row from the app's Database
+     */
+    private long insertReview(final Review review){
+        final long[] iD = new long[1];
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                iD[0] = mDbase.reviewDAO().insertReview(review);
+            }
+        });
+        return iD[0];
+    }
+
+    /**
+     * Inserts a Trailer object into the app's Database
+     * @return the iD of the new row from the app's Database
+     */
+    private long insertTrailer(final VideoKey trailer){
+        final long[] iD = new long[1];
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                iD[0] = mDbase.trailerDAO().insertTrailer(trailer);
+            }
+        });
+        return iD[0];
     }
 
     /**
