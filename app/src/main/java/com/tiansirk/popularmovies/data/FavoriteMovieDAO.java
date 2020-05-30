@@ -18,6 +18,9 @@ public interface FavoriteMovieDAO {
     long insertFavMovie(FavoriteMovie favoriteMovie);
 
     //Read
+    @Query("SELECT * FROM fav_movies_table ORDER BY onlineId")
+    List<FavoriteMovie> loadAllFavMoviesById();
+
     @Query("SELECT * FROM fav_movies_table ORDER BY userRating")
     List<FavoriteMovie> loadAllFavMoviesByRating();
 
