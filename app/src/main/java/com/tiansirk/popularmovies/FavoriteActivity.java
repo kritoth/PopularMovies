@@ -1,24 +1,40 @@
 package com.tiansirk.popularmovies;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.tiansirk.popularmovies.data.AppDatabase;
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.data.Review;
 import com.tiansirk.popularmovies.data.VideoKey;
+import com.tiansirk.popularmovies.model.FavoriteViewModel;
+import com.tiansirk.popularmovies.model.FavoriteViewModelFactory;
+import com.tiansirk.popularmovies.ui.MovieAdapter;
 import com.tiansirk.popularmovies.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = FavoriteActivity.class.getSimpleName();
+    private static final String KEY_ACTIVITY_INTENT = "key_movie_to_detail_activity";
 
-    private AppDatabase mDbase;
+    private RecyclerView mRecyclerView;
+    private ProgressBar mLoadingIndicator;
+
+    private MovieAdapter mAdapter;
     private List<Movie> mMovies;
 
     @Override
@@ -26,42 +42,37 @@ public class FavoriteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
-        mMovies = new ArrayList<>();
+        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
 
-        mDbase = AppDatabase.getsInstance(this);
-        final List<Movie> favoriteMovies = new ArrayList<>();
-        favoriteMovies.addAll(mDbase.movieDAO().loadAllFavMoviesByRating());
-        final List<String> reviews = new ArrayList<>();
-        final List<String> trailers = new ArrayList<>();
+        mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        mRecyclerView.setHasFixedSize(true);
+
+        mAdapter = new MovieAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
+
+        loadMovieDataFromDb();
+    }
+
+    private void loadMovieDataFromDb() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        FavoriteViewModelFactory factory = new FavoriteViewModelFactory(getApplication());
+        ViewModelProvider provider = new ViewModelProvider(this);
+        FavoriteViewModel viewModel = provider.get(FavoriteViewModel.class);
+        //TODO: switch according to user's preference
+        viewModel.getMoviesByDate().observe(this, new Observer<List<Movie>>() {
             @Override
-            public void run() {
-                for(Movie f : favoriteMovies){
-                    if(mDbase.reviewDAO().loadReviewsByMovie(f.getOnlineId()) != null) {
-                        List<Review> currMovieReviews = new ArrayList<Review>();
-                        currMovieReviews.addAll(mDbase.reviewDAO().loadReviewsByMovie(f.getOnlineId()));
-                        for(Review r : currMovieReviews) {
-                            reviews.add(r.getReview());
-                        }
-                    }
-                    if(mDbase.trailerDAO().loadTrailersByMovie(f.getOnlineId()) != null) {
-                        List<VideoKey> currMovieTrailers = new ArrayList<VideoKey>();
-                        currMovieTrailers.addAll(mDbase.trailerDAO().loadTrailersByMovie(f.getOnlineId()));
-                        for(VideoKey v : currMovieTrailers) {
-                            trailers.add(v.getVideoKey());
-                        }
-                    }
-                    mMovies.add(new Movie(f.getPosterImgUrl(), f.getPlotSynopsis(), f.getReleaseDate(), f.getTitle(),
-                            f.getUserRating(), trailers, reviews, f.getOnlineId()));
-                }
-                Log.d(TAG, "No. of Reviews in DB: " + mDbase.reviewDAO().getReviewsCount());
-                Log.d(TAG, "No. of Trailers in DB: " + mDbase.trailerDAO().getTrailersCount());
+            public void onChanged(List<Movie> movies) {
+                mAdapter.setMovieData((ArrayList<Movie>) movies);
             }
         });
-
-
     }
 
 
+    @Override
+    public void onClick(Movie clickedMovie) {
+        Intent activityIntent = new Intent(this, DetailActivity.class);
+        activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
+        startActivity(activityIntent);
+    }
 }
