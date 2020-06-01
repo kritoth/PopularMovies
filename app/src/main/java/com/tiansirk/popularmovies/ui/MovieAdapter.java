@@ -11,6 +11,7 @@ import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -98,7 +99,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
      *
      * @param movies The list of Movies to set to the Adapter
      */
-    public void setMovieData(ArrayList<Movie> movies) {
+    public void setMovieData(List<Movie> movies) {
         mMovieData.addAll(movies);
         notifyDataSetChanged();
     }

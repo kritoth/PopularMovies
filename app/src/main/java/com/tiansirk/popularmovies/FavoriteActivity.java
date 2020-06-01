@@ -57,13 +57,13 @@ public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.
     private void loadMovieDataFromDb() {
         mLoadingIndicator.setVisibility(View.VISIBLE);
         FavoriteViewModelFactory factory = new FavoriteViewModelFactory(getApplication());
-        ViewModelProvider provider = new ViewModelProvider(this);
+        ViewModelProvider provider = new ViewModelProvider(this, factory);
         FavoriteViewModel viewModel = provider.get(FavoriteViewModel.class);
         //TODO: switch according to user's preference
         viewModel.getMoviesByDate().observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(List<Movie> movies) {
-                mAdapter.setMovieData((ArrayList<Movie>) movies);
+                mAdapter.setMovieData(movies);
             }
         });
     }
