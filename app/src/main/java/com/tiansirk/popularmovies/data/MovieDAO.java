@@ -2,6 +2,7 @@ package com.tiansirk.popularmovies.data;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -19,19 +20,19 @@ public interface MovieDAO {
 
     //Read
     @Query("SELECT EXISTS(SELECT 1 FROM movies_table WHERE onlineId= :id)")
-    int searchMovie(int id);
+    LiveData<Integer> searchMovie(int id);
 
     @Query("SELECT * FROM movies_table ORDER BY onlineId")
-    List<Movie> loadAllFavMoviesById();
+    LiveData<List<Movie>> loadAllFavMoviesById();
 
     @Query("SELECT * FROM movies_table ORDER BY userRating")
-    List<Movie> loadAllFavMoviesByRating();
+    LiveData<List<Movie>> loadAllFavMoviesByRating();
 
     @Query("SELECT * FROM movies_table ORDER BY dateAddedToFav")
-    List<Movie> loadAllFavMoviesByDateAdded();
+    LiveData<List<Movie>> loadAllFavMoviesByDateAdded();
 
     @Query("SELECT * FROM movies_table WHERE onlineId= :id")
-    Movie loadFavMovie(int id);
+    LiveData<Movie> loadFavMovie(int id);
 
     //Update
 

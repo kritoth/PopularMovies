@@ -26,6 +26,8 @@ import java.util.Date;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -116,14 +118,20 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
      * favorite section in the UI.
      */
     private void setFavoriteStatus() {
-        if(searchFavoriteMovie() == 1) {
-            mMovie.setFavorite(true);
-            showAsFavorite();
-        }
-        else {
-            mMovie.setFavorite(false);
-            showAsNotFavoriteYet();
-        }
+        LiveData<Integer> isFound= mDbase.movieDAO().searchMovie(mMovie.getOnlineId());
+        isFound.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                if(integer == 1) {
+                    mMovie.setFavorite(true);
+                    showAsFavorite();
+                }
+                else if (integer == 0){
+                    mMovie.setFavorite(false);
+                    showAsNotFavoriteYet();
+                }
+            }
+        });
     }
 
     /**
@@ -131,8 +139,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
      */
     private void saveMovieAsFavorite() {
         mMovie.setDateAddedToFav(DateConverter.toTimestamp(today()));
-        mMovie.setFavorite(true);
         long insertedFavMovieId = insertFavoriteMovie(mMovie);
+
         Log.d(TAG, "\nNo. of Reviews in Movie: " + mMovie.getReviews().size() + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
 
         for(int i=0; i<mMovie.getReviews().size(); i++){
@@ -165,9 +173,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         deleteTrailersFromFavorites();
         deleteMovieFromFavorites();
         Toast.makeText(this, mMovie.getTitle() + " is removed from favorites.", Toast.LENGTH_LONG).show();
-        mMovie.setFavorite(false);
-        finish();
-        startActivity(getIntent());
     }
 
     //TODO: change to recyclerview clicklistener
@@ -179,36 +184,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         if (webIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(webIntent);
         }
-    }
-
-    /**
-     * Searches a Movie object by querying the app's Database using the id of the Movie as search term
-     * @return 1 or 0 depending the id exists as a record in the Database
-     */
-    private int searchFavoriteMovie(){
-        final int[] isFavorite = new int[1];
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                isFavorite[0] = mDbase.movieDAO().searchMovie(mMovie.getOnlineId());
-            }
-        });
-         return isFavorite[0];
-    }
-
-    /**
-     * Loads a Movie object by querying the app's Database using the id of the Movie as search term
-     * @return Movie object from the app's Database
-     */
-    private Movie loadFavoriteMovie() {
-        final Movie[] loadedMovie = new Movie[1];
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                loadedMovie[0] = mDbase.movieDAO().loadFavMovie(mMovie.getOnlineId());
-            }
-        });
-        return loadedMovie[0];
     }
 
     /**
