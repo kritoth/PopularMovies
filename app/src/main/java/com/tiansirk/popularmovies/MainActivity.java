@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -45,11 +44,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_MOVIEADAPTER)){
-            Log.d(TAG, "mUsersPreference restored: " + mUsersPreference);
-            mUsersPreference = savedInstanceState.getString(INSTANCE_MOVIEADAPTER);
-        }
-
         setContentView(R.layout.activity_main);
 
         mRecyclerView = findViewById(R.id.recyclerview_movies);
@@ -65,19 +59,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
-        loadMovieData();
+        loadMovieDataFromNetwork();
     }
 
     /**
      * Starts loading the data of the movies, depending on the user's preference selected in Settings menu
      * Default preference is "popular"
      */
-    private void loadMovieData() {
-        //TODO: AsyncTask changed to Executor:
-
-//        FetchMovieTask task = new FetchMovieTask();
-//        task.execute(usersPreference);
-
+    private void loadMovieDataFromNetwork() {
         mLoadingIndicator.setVisibility(View.VISIBLE);
         if (mUsersPreference == null || mUsersPreference.isEmpty()) {
             mUsersPreference = DEFAULT_USER_PREFERENCE;
@@ -108,43 +97,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 } catch (IOException | JSONException e) {
                     Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
                 }
-                //finish();
             }
         });
-    }
-//TODO: unused can be deleted
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
-        @Override
-        protected void onPreExecute() {
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-            super.onPreExecute();
-        }
-        @Override
-        protected ArrayList<Movie> doInBackground(String... strings) {
-            String receivedQueryParam = strings[0];
-            URL url = MoviesUtils.buildListUrl(receivedQueryParam, MainActivity.this);
-            try {
-                String jsonResponse = MoviesUtils.getResponseFromWeb(url);
-                //Log.d(TAG, "jsonResponse: " + jsonResponse);
-
-                ArrayList<Movie> moviesFetchedFromJson = MoviesUtils.getMoviesListFromJson(jsonResponse, MainActivity.this);
-                Log.d(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
-                        "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
-                return moviesFetchedFromJson;
-            } catch (IOException | JSONException e) {
-                Log.e(TAG, "Problem with either reading from Internet connection or parsing JSON: ", e);
-                return null;
-            }
-        }
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-            if (!movies.isEmpty()) {
-
-                showDataView();
-                mAdapter.setMovieData(movies);
-            } else showErrorMessage();
-        }
     }
 
     /**
@@ -171,10 +125,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mErrorMessage.setVisibility(View.VISIBLE);
     }
 
-
     @Override
     public void onClick(Movie clickedMovie) {
-        Log.d(TAG, "Movie item clicked: " + clickedMovie.toString());
+        //Log.d(TAG, "Movie item clicked: " + clickedMovie.toString());
 
         Intent activityIntent = new Intent(this, DetailActivity.class);
         activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
@@ -198,49 +151,37 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "popular";
-                loadMovieData();
+                loadMovieDataFromNetwork();
                 return true;
-
             case R.id.top_rated:
                 Log.d(TAG, "Top rated menu item selected");
-                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
+                mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "top_rated";
-                loadMovieData();
+                loadMovieDataFromNetwork();
                 return true;
-
             case R.id.now_playing:
                 Log.d(TAG, "Now playing menu item selected");
-                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
+                mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "now_playing";
-                loadMovieData();
+                loadMovieDataFromNetwork();
                 return true;
-
             case R.id.upcoming:
                 Log.d(TAG, "Upcoming menu item selected");
-                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
+                mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "upcoming";
-                loadMovieData();
+                loadMovieDataFromNetwork();
                 return true;
-
             case R.id.favorite:
                 Log.d(TAG, "Favorite menu item selected");
                 Intent activityIntent = new Intent(this, FavoriteActivity.class);
                 startActivity(activityIntent);
                 //Toast.makeText(MainActivity.this, "Favorites selected", Toast.LENGTH_LONG).show();
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-
-        outState.putString(INSTANCE_MOVIEADAPTER, mUsersPreference);
-        Log.d(TAG, "mUsersPreference's state is saved: " + mUsersPreference);
-        super.onSaveInstanceState(outState);
-    }
 }
