@@ -28,6 +28,9 @@ public interface TrailerDAO {
 
 
     //Delete
+    @Query("DELETE FROM videokeys_table WHERE movieId= :id")
+    void removeTrailersOfMovie(int id);
+
     @Delete
     int removeTrailer(VideoKey videoKey);
 

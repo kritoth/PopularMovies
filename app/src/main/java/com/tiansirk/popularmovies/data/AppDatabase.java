@@ -10,7 +10,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {FavoriteMovie.class, Review.class, VideoKey.class}, version = 1, exportSchema = false)
+@Database(entities = {Movie.class, Review.class, VideoKey.class}, version = 2, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -28,7 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             context.getApplicationContext(),
                             AppDatabase.class,
                             AppDatabase.DATABASE_NAME)
-                            .allowMainThreadQueries()
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
@@ -37,7 +37,7 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    public abstract FavoriteMovieDAO movieDAO();
+    public abstract MovieDAO movieDAO();
     public abstract TrailerDAO trailerDAO();
     public abstract ReviewDAO reviewDAO();
 }

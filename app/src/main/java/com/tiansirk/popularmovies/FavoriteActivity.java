@@ -3,12 +3,9 @@ package com.tiansirk.popularmovies;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.tiansirk.popularmovies.data.AppDatabase;
-import com.tiansirk.popularmovies.data.FavoriteMovie;
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.data.Review;
 import com.tiansirk.popularmovies.data.VideoKey;
@@ -32,7 +29,7 @@ public class FavoriteActivity extends AppCompatActivity {
         mMovies = new ArrayList<>();
 
         mDbase = AppDatabase.getsInstance(this);
-        final List<FavoriteMovie> favoriteMovies = new ArrayList<>();
+        final List<Movie> favoriteMovies = new ArrayList<>();
         favoriteMovies.addAll(mDbase.movieDAO().loadAllFavMoviesByRating());
         final List<String> reviews = new ArrayList<>();
         final List<String> trailers = new ArrayList<>();
@@ -40,7 +37,7 @@ public class FavoriteActivity extends AppCompatActivity {
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                for(FavoriteMovie f : favoriteMovies){
+                for(Movie f : favoriteMovies){
                     if(mDbase.reviewDAO().loadReviewsByMovie(f.getOnlineId()) != null) {
                         List<Review> currMovieReviews = new ArrayList<Review>();
                         currMovieReviews.addAll(mDbase.reviewDAO().loadReviewsByMovie(f.getOnlineId()));
@@ -62,7 +59,6 @@ public class FavoriteActivity extends AppCompatActivity {
                 Log.d(TAG, "No. of Trailers in DB: " + mDbase.trailerDAO().getTrailersCount());
             }
         });
-
 
 
     }

@@ -8,7 +8,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity (tableName = "videokeys_table", foreignKeys = @ForeignKey(
-                entity = FavoriteMovie.class,
+                entity = Movie.class,
                 parentColumns = "onlineId",
                 childColumns = "movieId",
                 onDelete = ForeignKey.CASCADE,

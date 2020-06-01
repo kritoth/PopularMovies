@@ -1,36 +1,40 @@
 package com.tiansirk.popularmovies.data;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.tiansirk.popularmovies.util.DateConverter;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
 import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 /**
  * Class for Movie objects to be presented to the user.
  */
-
+@Entity(tableName = "movies_table")
 public class Movie implements Parcelable {
 
-    @Ignore
     private String posterImgUrl;
-    @Ignore
     private String plotSynopsis;
-    @Ignore
     private String releaseDate;
-    @Ignore
     private String title;
-    @Ignore
     private double userRating;
     @Ignore
     private List<String> videoKeys;
     @Ignore
     private List<String> reviews;
-    @Ignore
+    @PrimaryKey
+    @NonNull
     private int onlineId;
+    private long dateAddedToFav;
+    boolean isFavorite;
 
     public Movie() {
     }
@@ -52,6 +56,10 @@ public class Movie implements Parcelable {
         parcel.writeList(videoKeys);
         parcel.writeList(reviews);
         parcel.writeInt(onlineId);
+        parcel.writeLong(dateAddedToFav);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            parcel.writeBoolean(isFavorite);
+        }
     }
     /**
      * This is used to regenerate Movie object. All Parcelables must have a CREATOR that implements these two methods
@@ -67,6 +75,7 @@ public class Movie implements Parcelable {
     };
 
     // Parcelling part of constructor. Reads from the Parcel that was written into above. Must maintain the same order of the fields
+    @Ignore
     public Movie(Parcel in){
         this.posterImgUrl = in.readString();
         this.plotSynopsis = in.readString();
@@ -78,10 +87,15 @@ public class Movie implements Parcelable {
         reviews = new ArrayList<String>();
         in.readList(reviews, Movie.class.getClassLoader());
         this.onlineId = in.readInt();
+        this.dateAddedToFav = in.readLong();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            this.isFavorite = in.readBoolean();
+        }
     }
 
     /**
-     * Constructor for Movie item. If any of the required params are not existing then an empty object of that type needed to be inserted
+     * Constructor for Movie item. If any of the required params are not existing then an empty object of that type needed to be inserted.
+     * At creating the object its field of isFavorite is going to be false and its field of dateAdded are going to be NOT initialized.
      * @param posterPath Complete URL path for an image resource as String
      * @param overview String with any length
      * @param releaseDate String with any length
@@ -91,6 +105,7 @@ public class Movie implements Parcelable {
      * @param reviews A List of Strings with any length or empty List
      * @param onlineId The id of the Movie in TMDB
      */
+    @Ignore
     public Movie(String posterPath, String overview, String releaseDate, String originalTitle, double voteAverage,
                  List<String> videoKeys, List<String> reviews, int onlineId){
         this.posterImgUrl = posterPath;
@@ -103,6 +118,7 @@ public class Movie implements Parcelable {
         this.reviews = new ArrayList<>();
         this.reviews.addAll(reviews);
         this.onlineId = onlineId;
+        this.isFavorite = false;
     }
 
     /**
@@ -153,12 +169,44 @@ public class Movie implements Parcelable {
         return !posterImgUrl.isEmpty();
     }
 
-    private boolean hasVideoKeys(){
-        return !videoKeys.isEmpty();
+    public long getDateAddedToFav() {
+        return dateAddedToFav;
     }
 
-    private boolean hasReviews(){
-        return !reviews.isEmpty();
+    public void setDateAddedToFav(long dateAddedToFav) {
+        this.dateAddedToFav = dateAddedToFav;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public void setPosterImgUrl(String posterImgUrl) {
+        this.posterImgUrl = posterImgUrl;
+    }
+
+    public void setPlotSynopsis(String plotSynopsis) {
+        this.plotSynopsis = plotSynopsis;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setUserRating(double userRating) {
+        this.userRating = userRating;
+    }
+
+    public void setOnlineId(int onlineId) {
+        this.onlineId = onlineId;
     }
 
     @NonNull
@@ -166,14 +214,13 @@ public class Movie implements Parcelable {
     public String toString() {
         return "\n Title: " + getTitle() +
                 "\n Has a poster: " + hasImage() +
-                "\n Plot synopsis: " + getPlotSynopsis().substring(0,21) + "..." +
+                "\n Plot synopsis: " + getPlotSynopsis().substring(0,9) + "..." +
                 "\n Release date: " + getReleaseDate() +
                 "\n User rating: " + getUserRating() +
                 "\n No. of Videos: " + getVideoKeys().size() +
-
                 "\n No. of reviews: " + getReviews().size() +
-
-                "\n TMDB id: " + getOnlineId();
+                "\n TMDB id: " + getOnlineId() +
+                "\n It is a favorite: " + isFavorite();
     }
 
 }
