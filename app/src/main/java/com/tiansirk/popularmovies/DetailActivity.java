@@ -15,6 +15,8 @@ import com.tiansirk.popularmovies.data.AppDatabase;
 import com.tiansirk.popularmovies.data.Movie;
 import com.tiansirk.popularmovies.data.Review;
 import com.tiansirk.popularmovies.data.VideoKey;
+import com.tiansirk.popularmovies.model.DetailViewModel;
+import com.tiansirk.popularmovies.model.DetailViewModelFactory;
 import com.tiansirk.popularmovies.ui.ReviewAdapter;
 import com.tiansirk.popularmovies.ui.TrailerAdapter;
 import com.tiansirk.popularmovies.util.AppExecutors;
@@ -27,8 +29,8 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -100,7 +102,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mDbase = AppDatabase.getsInstance(getApplicationContext());
 
-        setFavoriteStatus();
+        setupViewModel();
 
         // OnClickListener for the FavoriteButton in the favorite section
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
@@ -129,9 +131,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
      * this state, sets how to display the Movie to the user: either as favorite or not by setting the text and image of the
      * favorite section in the UI.
      */
-    private void setFavoriteStatus() {
-        LiveData<Integer> isFound= mDbase.movieDAO().searchMovie(mMovie.getOnlineId());
-        isFound.observe(this, new Observer<Integer>() {
+    private void setupViewModel() {
+        DetailViewModelFactory factory = new DetailViewModelFactory(getApplication(), mMovie.getOnlineId());
+        ViewModelProvider provider = new ViewModelProvider(this, factory);
+        DetailViewModel viewModel = provider.get(DetailViewModel.class);
+
+        viewModel.getMovieIsFound().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
                 if(integer == 1) {
@@ -173,8 +178,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             Toast.makeText(getApplicationContext(), "Saving " + mMovie.getTitle() + " as favorite was unsuccessful.", Toast.LENGTH_LONG).show();
             Log.d(TAG, "Movie INSERT successful");
         }
-        finish();
-        startActivity(getIntent());
+
     }
 
     /**
