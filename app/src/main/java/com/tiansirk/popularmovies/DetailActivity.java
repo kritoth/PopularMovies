@@ -24,6 +24,7 @@ import com.tiansirk.popularmovies.util.MoviesUtils;
 import java.util.Calendar;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -36,6 +37,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
     private static final String INSTANCE_FAVORITE_STATUS = "favorite_status_state";
+    private static final String INSTANCE_MOVIE = "movie_state";
 
     private ImageView mPoster;
     private TextView mTitleView;
@@ -60,6 +62,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         setContentView(R.layout.activity_detail);
 
         initViews();
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_MOVIE)){
+            mMovie = savedInstanceState.getParcelable(INSTANCE_MOVIE);
+        }
 
         Intent receivedIntent = getIntent();
         if(receivedIntent != null) {
@@ -110,6 +116,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 }
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(INSTANCE_MOVIE, mMovie);
     }
 
     /**
