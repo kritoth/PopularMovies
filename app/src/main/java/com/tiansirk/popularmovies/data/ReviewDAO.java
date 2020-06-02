@@ -2,6 +2,7 @@ package com.tiansirk.popularmovies.data;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -16,7 +17,7 @@ public interface ReviewDAO {
 
     //Read
     @Query("SELECT * FROM reviews_table WHERE movieId= :id")
-    List<Review> loadReviewsByMovie(int id);
+    LiveData<List<Review>> loadReviewsByMovie(int id);
 
     @Query("SELECT * FROM reviews_table")
     List<Review> loadAllReviews();

@@ -159,9 +159,8 @@ public final class MoviesUtils {
             double voteAverage = object.getDouble("vote_average");
 
             int id = object.getInt("id");
-            //Todo: 1. get this new network request out
-            // 2. insert empty List<>s here and make the other second request when starting DetailActivity
-            // 3. for this the "id" of the Movie need to be saved into Movie
+
+            //New network request is needed for reviews and videos
             String movieDetails = getResponseFromWeb(buildDetailURL(id, context));
             JSONObject responseDetail = new JSONObject(movieDetails);
 

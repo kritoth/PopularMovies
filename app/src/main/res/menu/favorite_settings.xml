@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/sort_id"
+        android:title="Sort by movie ID"
+        android:orderInCategory="1"
+        app:showAsAction="collapseActionView"/>
+    <item
+        android:id="@+id/sort_rate"
+        android:title="Sort by rating average"
+        android:orderInCategory="1"
+        app:showAsAction="collapseActionView"/>
+    <item
+        android:id="@+id/sort_date"
+        android:title="Sort by date added to favorites"
+        android:orderInCategory="1"
+        app:showAsAction="collapseActionView"/>
+    <item
+        android:id="@+id/delete_all"
+        android:title="DELETE ALL favorites"
+        android:orderInCategory="1"
+        app:showAsAction="collapseActionView"/>
+</menu>

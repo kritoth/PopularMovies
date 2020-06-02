@@ -1,5 +1,6 @@
 package com.tiansirk.popularmovies;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -10,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,12 +34,13 @@ public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.
 
     private static final String TAG = FavoriteActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
+    private static final String DEFAULT_SORT_PREFERENCE = "id";
 
     private RecyclerView mRecyclerView;
     private ProgressBar mLoadingIndicator;
 
     private MovieAdapter mAdapter;
-    private List<Movie> mMovies;
+    private String mSortingPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +65,50 @@ public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.
         mLoadingIndicator.setVisibility(View.VISIBLE);
         FavoriteViewModelFactory factory = new FavoriteViewModelFactory(getApplication());
         ViewModelProvider provider = new ViewModelProvider(this, factory);
-        FavoriteViewModel viewModel = provider.get(FavoriteViewModel.class);
-        //TODO: switch according to user's preference
-        viewModel.getMoviesByDate().observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(List<Movie> movies) {
-                showDataView();
-                mAdapter.setMovieData(movies);
-            }
-        });
+        final FavoriteViewModel viewModel = provider.get(FavoriteViewModel.class);
+        // Querying the Database according to user's preference
+        // Reviews and Trailer links are not queried here, only MovieDAO
+        if(mSortingPreference == null || mSortingPreference.isEmpty()){
+            mSortingPreference = DEFAULT_SORT_PREFERENCE;
+        }
+        switch (mSortingPreference) {
+            case "id":
+                viewModel.getMoviesById().observe(this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        showDataView();
+                        mAdapter.setMovieData(movies);
+                    }
+                });
+                break;
+            case "rating":
+                viewModel.getMoviesByRate().observe(this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        showDataView();
+                        mAdapter.setMovieData(movies);
+                    }
+                });
+                break;
+            case "date":
+                viewModel.getMoviesByDate().observe(this, new Observer<List<Movie>>() {
+                    @Override
+                    public void onChanged(List<Movie> movies) {
+                        showDataView();
+                        mAdapter.setMovieData(movies);
+                    }
+                });
+                break;
+            case "delete":
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewModel.deleteAllFavorites();
+                    }
+                });
+                finish();
+                break;
+        }
     }
 
     /**
@@ -92,4 +132,47 @@ public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.favorite_settings, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int selectedItem = item.getItemId();
+
+        switch (selectedItem) {
+            case R.id.sort_id:
+                Log.d(TAG, "Sort ID menu item selected");
+                mSortingPreference = "id";
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                loadMovieDataFromDb();
+                return true;
+            case R.id.sort_rate:
+                Log.d(TAG, "Sort rating avg menu item selected");
+                mSortingPreference = "rating";
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                loadMovieDataFromDb();
+                return true;
+            case R.id.sort_date:
+                Log.d(TAG, "Sort date added menu item selected");
+                mSortingPreference = "date";
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                loadMovieDataFromDb();
+                return true;
+            case R.id.delete_all:
+                Log.d(TAG, "Sort DELETE ALL menu item selected");
+                mSortingPreference = "delete";
+                mAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mAdapter);
+                loadMovieDataFromDb();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
