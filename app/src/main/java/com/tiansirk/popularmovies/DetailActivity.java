@@ -30,6 +30,7 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,9 +48,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private TextView mReleaseDateView;
     private TextView mRatingView;
     private TextView mPlotView;
-
     private ImageView mFavoriteButton;
     private TextView mFavoriteText;
+    private TextView mSharingText;
 
     private RecyclerView mTrailerRV;
     private RecyclerView mReviewRV;
@@ -105,6 +106,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mDbase = AppDatabase.getsInstance(getApplicationContext());
 
         setupViewModel();
+
+        // OnClickListener for the ShareText in the sharing section
+        mSharingText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareText(mMovie.getVideoKeys().get(0));
+            }
+        });
 
         // OnClickListener for the FavoriteButton in the favorite section
         mFavoriteButton.setOnClickListener(new View.OnClickListener() {
@@ -294,7 +303,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mFavoriteButton = findViewById(R.id.detail_iv_favorite);
         mFavoriteText = findViewById(R.id.detail_tv_favorite);
         mPlotView = findViewById(R.id.detail_tv_overview);
-
+        mSharingText = findViewById(R.id.detail_tv_share);
         mReviewRV = findViewById(R.id.detail_rv_review_holder);
         mTrailerRV = findViewById(R.id.detail_rv_trailer_holder);
     }
@@ -322,6 +331,25 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private void showAsNotFavoriteYet(){
         mFavoriteButton.setImageResource(R.drawable.ic_star_border_gold_24dp);
         mFavoriteText.setText(R.string.mark_as_favorite);
+    }
+
+    /**
+     * Shares youtube URL as text and allows the user to select which app they would like to use to
+     * share the text.
+     * @param textToShare Text that will be shared
+     */
+    private void shareText(String textToShare) {
+        String mimeType = "text/plain";
+        String title = "Trailer of a great Movie to check out!";
+
+        /* ShareCompat.IntentBuilder provides a fluent API for creating Intents */
+        ShareCompat.IntentBuilder
+                /* The from method specifies the Context from which this share is coming from */
+                .from(this)
+                .setType(mimeType)
+                .setChooserTitle(title)
+                .setText(MoviesUtils.buildVideoURL(textToShare).toString())
+                .startChooser();
     }
 
     /**
