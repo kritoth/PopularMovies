@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -159,7 +160,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         long insertedFavMovieId = insertFavoriteMovie(mMovie);
 
         Log.d(TAG, "\nNo. of Reviews in Movie: " + mMovie.getReviews().size() + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
-
         for(int i=0; i<mMovie.getReviews().size(); i++){
             Review currReview = new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i));
             insertReview(currReview);
@@ -295,7 +295,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mReviewRV = findViewById(R.id.detail_rv_review_holder);
         mTrailerRV = findViewById(R.id.detail_rv_trailer_holder);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return  true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

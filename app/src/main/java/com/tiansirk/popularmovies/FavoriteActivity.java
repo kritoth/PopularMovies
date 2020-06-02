@@ -29,7 +29,7 @@ import java.util.List;
 public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = FavoriteActivity.class.getSimpleName();
-    private static final String KEY_ACTIVITY_INTENT = "key_movie_to_detail_activity";
+    private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
 
     private RecyclerView mRecyclerView;
     private ProgressBar mLoadingIndicator;
@@ -42,6 +42,8 @@ public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator_favorites);
+        mRecyclerView = findViewById(R.id.recyclerview_favorites);
         RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
 
         mRecyclerView.setLayoutManager(gridLayoutManager);
@@ -63,16 +65,31 @@ public class FavoriteActivity extends AppCompatActivity implements MovieAdapter.
         viewModel.getMoviesByDate().observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(List<Movie> movies) {
+                showDataView();
                 mAdapter.setMovieData(movies);
             }
         });
     }
 
-
+    /**
+     * Clicking on an item of the RecyclerView will open up the DetailActivity by sending the details of the clicked Movie
+     * @param clickedMovie {@class Movie} object
+     */
     @Override
     public void onClick(Movie clickedMovie) {
         Intent activityIntent = new Intent(this, DetailActivity.class);
         activityIntent.putExtra(KEY_ACTIVITY_INTENT, clickedMovie);
         startActivity(activityIntent);
     }
+
+    /**
+     * This method will make the RecyclerView visible and hide the error message
+     */
+    private void showDataView() {
+        /* Hide loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        /* Then, make sure the movie is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
 }

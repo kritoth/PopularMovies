@@ -9,8 +9,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FavoriteActivity"></activity>
-        <!-- singleTop launchMode ensures that MainActivity won't be recreated when we navigate back from childactivity -->
+        <activity android:name=".FavoriteActivity"
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <!-- singleTop launchMode ensures that the Activity won't be recreated when we navigate back from childactivity -->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop">

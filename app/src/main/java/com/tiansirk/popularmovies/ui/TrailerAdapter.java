@@ -35,8 +35,8 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     public TrailerAdapter(Movie movie, TrailerAdapterOnClickHandler onClickHandler) {
         mTrailerData = new ArrayList<>();
         mTrailerData.addAll(movie.getVideoKeys());
-        mClickHandler = onClickHandler;
         Log.d(TAG, "Trailers loaded into Adapter: " + mTrailerData.size());
+        mClickHandler = onClickHandler;
     }
 
     public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -71,7 +71,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     @Override
     public void onBindViewHolder(@NonNull TrailerAdapter.TrailerViewHolder holder, int position) {
-        String titleForThisItem = "Trailer " + position;
+        String titleForThisItem = "Trailer " + position+1;
         holder.mTrailerTitle.setText(titleForThisItem);
     }
 
