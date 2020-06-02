@@ -160,7 +160,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mMovie.setDateAddedToFav(DateConverter.toTimestamp(today()));
         long insertedFavMovieId = insertFavoriteMovie(mMovie);
 
-        Log.d(TAG, "\nNo. of Reviews in Movie: " + mMovie.getReviews().size() + "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
+        Log.d(TAG, "\nNo. of Reviews in Movie: " + mMovie.getReviews().size() +
+                "\nNo. of Trailers in Movie: " + mMovie.getVideoKeys().size());
         for(int i=0; i<mMovie.getReviews().size(); i++){
             Review currReview = new Review(mMovie.getOnlineId(), mMovie.getReviews().get(i));
             insertReview(currReview);

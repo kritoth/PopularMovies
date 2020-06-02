@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
     private static final String DEFAULT_USER_PREFERENCE = "popular"; // or it can be: favorites, top_rated, upcoming, latest, now_playing
-    private static final String INSTANCE_MOVIEADAPTER = "adapter_state";
 
     private String mUsersPreference;
     private RecyclerView mRecyclerView;
@@ -43,19 +42,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = findViewById(R.id.recyclerview_movies);
-        mErrorMessage = findViewById(R.id.tv_error_message_display);
-        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+        initViews();
 
         RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
-
         mRecyclerView.setLayoutManager(gridLayoutManager);
-
         mRecyclerView.setHasFixedSize(true);
-
         mAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -82,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     Log.d(TAG, "Number of fetched movies: " + moviesFetchedFromJson.size() +
                             "\nFirst movie in the list: " + moviesFetchedFromJson.get(0).toString());
 
-                    //TODO: Simplify this later with AAC
+                    //UI related process, ie. showing the result of network call, can be made in UI thread only
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -148,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         switch (selectedItem) {
             case R.id.popular:
                 Log.d(TAG, "Popular menu item selected");
-                mAdapter = new MovieAdapter(this); // Töröld nehogy újracsinálja, így elkerülöd, hogy újra jelenjen meg
+                mAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mAdapter);
                 mUsersPreference = "popular";
                 loadMovieDataFromNetwork();
@@ -184,4 +177,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return super.onOptionsItemSelected(item);
     }
 
+    private void initViews(){
+        mRecyclerView = findViewById(R.id.recyclerview_movies);
+        mErrorMessage = findViewById(R.id.tv_error_message_display);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+    }
 }
