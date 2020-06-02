@@ -23,23 +23,22 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     private static final String TAG = TrailerAdapter.class.getSimpleName();
 
     private List<String> mTrailerData;
-    private final TrailerAdapterOnClickHandler mClickHandler;
+    private OnTrailerItemClicked mOnClick;
 
     /**
      * The interface that receives onClick messages.
      */
-    public interface TrailerAdapterOnClickHandler {
-        void onClick(String clickedTrailerUrl);
+    public interface OnTrailerItemClicked {
+        void onItemClick(String clickedTrailerUrl);
     }
 
-    public TrailerAdapter(Movie movie, TrailerAdapterOnClickHandler onClickHandler) {
+    public TrailerAdapter(Movie movie) {
         mTrailerData = new ArrayList<>();
         mTrailerData.addAll(movie.getVideoKeys());
         Log.d(TAG, "Trailers loaded into Adapter: " + mTrailerData.size());
-        mClickHandler = onClickHandler;
     }
 
-    public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class TrailerViewHolder extends RecyclerView.ViewHolder{
         public final ImageView mPlayButtonView;
         public final TextView mTrailerTitle;
 
@@ -49,12 +48,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
             mTrailerTitle = itemView.findViewById(R.id.trailer_item_tv_title);
         }
 
-        @Override
-        public void onClick(View view) {
-            int clickedPosition = getAdapterPosition();
-            String trailerUrlKey = mTrailerData.get(clickedPosition);
-            mClickHandler.onClick(trailerUrlKey);
-        }
+
     }
 
     @NonNull
@@ -70,9 +64,17 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TrailerAdapter.TrailerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TrailerAdapter.TrailerViewHolder holder, int position) {
         String titleForThisItem = "Trailer " + position+1;
         holder.mTrailerTitle.setText(titleForThisItem);
+        holder.mPlayButtonView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int clickedPosition = holder.getAdapterPosition();
+                String trailerUrlKey = mTrailerData.get(clickedPosition);
+                mOnClick.onItemClick(trailerUrlKey);
+            }
+        });
     }
 
     @Override
@@ -80,6 +82,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         if(mTrailerData == null) return 0;
         else if(mTrailerData.isEmpty()) return 0;
         return mTrailerData.size();
+    }
+
+    public void setOnClick(OnTrailerItemClicked onClick){
+        this.mOnClick = onClick;
     }
 
     public void setTrailerData (List<String> trailerData){

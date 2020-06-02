@@ -35,7 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler {
+public class DetailActivity extends AppCompatActivity implements TrailerAdapter.OnTrailerItemClicked {
 
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String KEY_ACTIVITY_INTENT = "CHOSEN_MOVIE";
@@ -98,8 +98,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         RecyclerView.LayoutManager trailerLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
         mTrailerRV.setLayoutManager(trailerLayoutManager);
         mTrailerRV.setHasFixedSize(true);
-        mTrailerAdapter = new TrailerAdapter(mMovie, this);
+        mTrailerAdapter = new TrailerAdapter(mMovie);
         mTrailerRV.setAdapter(mTrailerAdapter);
+        mTrailerAdapter.setOnClick(this);
 
         mDbase = AppDatabase.getsInstance(getApplicationContext());
 
@@ -191,9 +192,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         Toast.makeText(this, mMovie.getTitle() + " is removed from favorites.", Toast.LENGTH_LONG).show();
     }
 
-    //TODO: change to recyclerview clicklistener
+    // Clicklistener for the trailers
     @Override
-    public void onClick(String clickedTrailerUrl) {
+    public void onItemClick(String clickedTrailerUrl) {
         Log.d(TAG, "Trailer item clicked: " + clickedTrailerUrl);
 
         Intent webIntent = new Intent(Intent.ACTION_VIEW, MoviesUtils.buildVideoURL(clickedTrailerUrl));
